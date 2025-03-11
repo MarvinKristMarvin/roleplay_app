@@ -4,11 +4,91 @@ import React from "react";
 import { useParams } from "next/navigation";
 import Image from "next/image";
 import { useState } from "react";
+import Select from "react-select";
+import { StylesConfig } from "react-select";
+import { useEffect } from "react";
+
+const optionsSlots = [
+  { value: "0", label: "0" },
+  { value: "1", label: "1" },
+  { value: "2", label: "2" },
+  { value: "3", label: "3" },
+  { value: "4", label: "4" },
+  { value: "5", label: "5" },
+  { value: "6", label: "6" },
+  { value: "7", label: "7" },
+  { value: "8", label: "8" },
+  { value: "9", label: "9" },
+];
+
+const optionsType = [
+  { value: "Ressource", label: "Ressource" },
+  { value: "Main", label: "Main" },
+  { value: "Mains", label: "Mains" },
+  { value: "Tête", label: "Tête" },
+  { value: "Buste", label: "Buste" },
+  { value: "Jambes", label: "Jambes" },
+  { value: "Pieds", label: "Pieds" },
+  { value: "Sac", label: "Sac" },
+  { value: "Accessoire", label: "Accessoire" },
+];
+
+type OptionType = {
+  value: string;
+  label: string;
+};
+
+// Custom styles for the Select component
+const customStyles: StylesConfig<{ value: string; label: string }, false> = {
+  control: (provided) => ({
+    ...provided,
+    border: "4px solid rgb(233, 187, 156)" /* $mediumcolor */,
+    color: "#300f00" /* $darkcolor */,
+    borderRadius: "0.25rem",
+    marginBottom: "0.5rem",
+    fontWeight: "600",
+    cursor: "pointer",
+    fontSize: "0.875rem",
+  }),
+  singleValue: (provided) => ({
+    ...provided,
+    color: "#300f00", // Dark color for selected text
+  }),
+  menu: (provided) => ({
+    ...provided,
+    border: "2px solid rgb(233, 187, 156)", // Medium color for dropdown container
+  }),
+  placeholder: (provided) => ({
+    ...provided,
+    color: "darkColor", // Placeholder text color
+  }),
+  option: (provided, state) => ({
+    ...provided,
+    backgroundColor: state.isSelected ? "#300f00" : "white",
+    color: state.isSelected ? "white" : "#300f00",
+    cursor: "pointer",
+    fontSize: "0.875rem",
+    fontWeight: "600",
+
+    borderBottom: "1px solid rgb(233, 187, 156)",
+  }),
+};
 
 export default function NamePage() {
   const { name } = useParams();
+
   const [tab, setTab] = useState("skills");
-  const [modal, setModal] = useState(true);
+
+  const [openedModal, setOpenedModal] = useState("");
+
+  // isClient only true when on client, this condition prevents mismatches SSR/CSR
+  const [isClient, setIsClient] = useState(false);
+  useEffect(() => {
+    setIsClient(true);
+  }, []);
+
+  const [selectedSlot, setSelectedSlot] = useState<OptionType | null>(null);
+  const [selectedType, setSelectedType] = useState<OptionType | null>(null);
 
   return (
     <main className="NamePage">
@@ -129,8 +209,6 @@ export default function NamePage() {
       {tab === "inventory" ? (
         <>
           <div className="items">
-            <button>+</button>
-
             <div className="item">
               <div className="name_and_slot">
                 <p className="name">Oeil de crabe géant</p>
@@ -145,7 +223,7 @@ export default function NamePage() {
               <p className="infos">Appelle la voile runique</p>
             </div>
 
-            <div className="item">
+            <div className="item" onClick={() => setOpenedModal("modify_item")}>
               <div className="name_and_slot">
                 <p className="name">Marteau en plomb lourd</p>
                 <span>5</span>
@@ -258,6 +336,7 @@ export default function NamePage() {
               </div>
               <p className="infos">+10 VIE, +1 Charisme, +1 Courage</p>
             </div>
+            <button onClick={() => setOpenedModal("create_item")}>+</button>
           </div>
         </>
       ) : (
@@ -266,7 +345,7 @@ export default function NamePage() {
       {tab === "stats" ? (
         <>
           <div className="stats_container">
-            <div className="stat">
+            <div className="stat" onClick={() => setOpenedModal("modify_stat")}>
               <div className="name_and_value">
                 <p className="stat_name">VIE</p>
                 <p className="stat_value">2000</p>
@@ -296,8 +375,6 @@ export default function NamePage() {
                 <p className="stat_value">6</p>
               </div>
             </div>
-          </div>
-          <div className="stats_container">
             <div className="stat">
               <div className="name_and_value">
                 <p className="stat_name">Chance</p>
@@ -317,7 +394,10 @@ export default function NamePage() {
       )}
       {tab === "skills" ? (
         <>
-          <header className="skills_header">
+          <header
+            className="skills_header"
+            onClick={() => setOpenedModal("modify_skillpoints")}
+          >
             <Image
               src="/icons/cube.png"
               alt="dice"
@@ -328,7 +408,10 @@ export default function NamePage() {
             <p className="skills_points">4</p>
           </header>
           <div className="skills_container">
-            <div className="skill">
+            <div
+              className="skill"
+              onClick={() => setOpenedModal("modify_skill")}
+            >
               <div className="name_and_level">
                 <p className="skill_name">Coup de marteau</p>
                 <p className="skill_level">3</p>
@@ -353,7 +436,8 @@ export default function NamePage() {
       ) : (
         ""
       )}
-      {modal === true ? (
+      {/* MODAL CREATE ITEM */}
+      {isClient && openedModal === "create_item" ? (
         <>
           <div className="modal">
             <div className="modal_window">
@@ -361,41 +445,167 @@ export default function NamePage() {
                 <p className="modal_title">Créer un objet</p>
                 <button
                   className="modal_button_close"
-                  onClick={() => setModal(false)}
+                  onClick={() => setOpenedModal("")}
                 >
                   &#10006;
                 </button>
               </div>
               <div className="modal_content">
                 <input type="text" placeholder="Nom" />
-                <select id="slots" name="slots">
-                  <option value="" disabled selected>
-                    Encombrement
-                  </option>
-                  <option value="0">0</option>
-                  <option value="1">1</option>
-                  <option value="2">2</option>
-                  <option value="3">3</option>
-                  <option value="4">4</option>
-                  <option value="5">5</option>
-                  <option value="6">6</option>
-                  <option value="7">7</option>
-                  <option value="8">8</option>
-                  <option value="9">9</option>
-                </select>
-                <select id="type" name="type">
-                  <option value="Ressource">Ressource</option>
-                  <option value="Main">Main</option>
-                  <option value="Mains">Mains</option>
-                  <option value="Tête">Tête</option>
-                  <option value="Buste">Buste</option>
-                  <option value="Jambes">Jambes</option>
-                  <option value="Pieds">Pieds</option>
-                  <option value="Sac">Sac</option>
-                  <option value="Accessoire">Accessoire</option>
-                </select>
+                <div>
+                  <Select
+                    options={optionsSlots}
+                    value={selectedSlot}
+                    onChange={(selectedOption) =>
+                      setSelectedSlot(selectedOption)
+                    }
+                    placeholder="Encombrement"
+                    styles={customStyles}
+                  />
+
+                  <Select
+                    options={optionsType}
+                    value={selectedType}
+                    onChange={(selectedOption) =>
+                      setSelectedType(selectedOption)
+                    }
+                    placeholder="Type"
+                    styles={customStyles}
+                  />
+                </div>
                 <input type="text" placeholder="Description" />
-                <button className="modal_button_confirm">CONFIRMER</button>
+                <button className="modal_button confirm">OK</button>
+              </div>
+            </div>
+          </div>
+        </>
+      ) : (
+        ""
+      )}
+      {/* MODAL MODIFY ITEM */}
+      {isClient && openedModal === "modify_item" ? (
+        <>
+          <div className="modal">
+            <div className="modal_window">
+              <div className="modal_header">
+                <p className="modal_title">Modifier l&apos;objet</p>
+                <button
+                  className="modal_button_close"
+                  onClick={() => setOpenedModal("")}
+                >
+                  &#10006;
+                </button>
+              </div>
+              <div className="modal_content">
+                <input type="text" placeholder="Nom" />
+                <div>
+                  <Select
+                    options={optionsSlots}
+                    value={selectedSlot}
+                    onChange={(selectedOption) =>
+                      setSelectedSlot(selectedOption)
+                    }
+                    placeholder="Encombrement"
+                    styles={customStyles}
+                  />
+
+                  <Select
+                    options={optionsType}
+                    value={selectedType}
+                    onChange={(selectedOption) =>
+                      setSelectedType(selectedOption)
+                    }
+                    placeholder="Type"
+                    styles={customStyles}
+                  />
+                </div>
+                <input type="text" placeholder="Description" />
+                <button className="modal_button equip">EQUIPER</button>
+                <button className="modal_button delete">SUPPRIMER</button>
+                <button className="modal_button confirm">OK</button>
+              </div>
+            </div>
+          </div>
+        </>
+      ) : (
+        ""
+      )}
+      {/* MODAL MODIFY STAT*/}
+      {isClient && openedModal === "modify_stat" ? (
+        <>
+          <div className="modal">
+            <div className="modal_window">
+              <div className="modal_header">
+                <p className="modal_title">Vie de base</p>
+                <button
+                  className="modal_button_close"
+                  onClick={() => setOpenedModal("")}
+                >
+                  &#10006;
+                </button>
+              </div>
+              <div className="modal_content">
+                <input type="text" defaultValue={28} />
+                <button className="modal_button confirm">OK</button>
+              </div>
+            </div>
+          </div>
+        </>
+      ) : (
+        ""
+      )}
+      {/* MODAL SKILL POINTS*/}
+      {isClient && openedModal === "modify_skillpoints" ? (
+        <>
+          <div className="modal">
+            <div className="modal_window">
+              <div className="modal_header">
+                <p className="modal_title">Points de compétence</p>
+                <button
+                  className="modal_button_close"
+                  onClick={() => setOpenedModal("")}
+                >
+                  &#10006;
+                </button>
+              </div>
+              <div className="modal_content">
+                <input type="text" defaultValue={4} />
+                <button className="modal_button confirm">OK</button>
+              </div>
+            </div>
+          </div>
+        </>
+      ) : (
+        ""
+      )}
+      {/* MODAL MODIFY SKILL */}
+      {isClient && openedModal === "modify_skill" ? (
+        <>
+          <div className="modal">
+            <div className="modal_window">
+              <div className="modal_header">
+                <p className="modal_title">Modifier compétence</p>
+                <button
+                  className="modal_button_close"
+                  onClick={() => setOpenedModal("")}
+                >
+                  &#10006;
+                </button>
+              </div>
+              <div className="modal_content">
+                <input
+                  type="text"
+                  placeholder="Nom"
+                  defaultValue={"Balayage aquatique"}
+                />
+                <input type="text" placeholder="Niveau" defaultValue={2} />
+                <input
+                  type="text-area"
+                  placeholder="Description"
+                  defaultValue={"Ma formule mathématique"}
+                />
+                <button className="modal_button delete">SUPPRIMER</button>
+                <button className="modal_button confirm">OK</button>
               </div>
             </div>
           </div>
