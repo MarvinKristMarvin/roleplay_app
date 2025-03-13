@@ -1,0 +1,12 @@
+Les boutons OK et X fonctionnent pour les traits. Faire le bouton SUPPRIMER
+et la logique de création de trait.
+
+Puis faire la même chose pour les autres modales. (modifier et creer)
+
+Ensuite, le state du personnage était mis à jour sur le front, il faut
+remplacer le doc character mdb par le nouveau à chaque modif du state.
+
+Pour ca il faut créer la bdd, faire un serveur qui récupère les routes API
+puis execute des requetes db, puis renvoie les données au front
+
+Je peux me renseigner sur comment faire ca sur nextjs surtout

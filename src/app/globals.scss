@@ -40,11 +40,13 @@ body {
 
   .App {
     max-width: 540px;
-    height: 100vh;
+    min-height: 100vh;
     > * {
       height: 100%;
     }
+    background-color: $bgcolor;
     .HomePage {
+      height: 100vh;
       display: flex;
       justify-content: center;
       align-items: center;
@@ -52,12 +54,13 @@ body {
         max-width: 540px;
         object-position: 78% center;
         object-fit: cover;
-        z-index: -1;
+        z-index: 0;
       }
       .menu {
         display: flex;
         flex-direction: column;
         width: 80%;
+        z-index: 1;
         input {
           margin-bottom: 0.5rem;
           border: none;
@@ -224,7 +227,7 @@ body {
       .description_text {
         cursor: pointer;
         p {
-          background-color: $darkbgcolor;
+          background-color: $white;
           color: $darkcolor;
           border-radius: 0.25rem;
           border: solid 4px $mediumcolor;
@@ -246,7 +249,7 @@ body {
 
         p {
           cursor: pointer;
-          background-color: $darkbgcolor;
+          background-color: $white;
           border-radius: 0.25rem;
           margin-top: 0.5rem;
           padding-inline: 0.5rem;
@@ -263,9 +266,10 @@ body {
           width: 100%;
           border-radius: 0.25rem;
           border: solid 4px $mediumcolor;
-          background-color: transparent;
+          background-color: $bgcolor;
           color: $mediumcolor;
           cursor: pointer;
+          margin-top: 1rem;
         }
       }
       .inventory_header {
@@ -318,6 +322,7 @@ body {
           color: $mediumcolor;
           margin-bottom: 1.25rem;
           cursor: pointer;
+          margin-top: 0.5rem;
         }
         .item {
           &:last-child {
@@ -373,7 +378,7 @@ body {
             border-top: none;*/
             padding-block: 0.5rem;
             padding-inline: 0.75rem;
-            background-color: $bgcolor;
+            background-color: $white;
             font-size: 0.875rem;
             color: $darkcolor;
           }
@@ -386,7 +391,7 @@ body {
 
         align-items: center;
 
-        background-color: $darkbgcolor;
+        background-color: $bgcolor;
         border-radius: 0.25rem;
         border: solid 4px $mediumcolor;
         color: $darkcolor;
@@ -396,8 +401,8 @@ body {
           width: 100%;
           cursor: pointer;
 
-          &:nth-child(2n) {
-            background-color: $bgcolor;
+          &:nth-child(2n + 1) {
+            background-color: $darkbgcolor;
           }
           .name_and_value {
             display: flex;
@@ -482,7 +487,7 @@ body {
             }
           }
           .skill_description {
-            background-color: $bgcolor;
+            background-color: $white;
             padding-inline: 0.75rem;
             padding-block: 0.5rem;
             font-weight: 600;
@@ -503,6 +508,7 @@ body {
         background-color: transparent;
         color: $mediumcolor;
         cursor: pointer;
+        margin-top: 0.5rem;
       }
       .modal {
         position: fixed;
@@ -529,21 +535,26 @@ body {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding-left: 1rem;
-            padding-right: 1.125rem;
-            padding-block: 0.75rem;
+
             background-color: $darkcolor;
+            > * {
+              position: relative;
+              top: -2px;
+            }
 
             .modal_title {
               font-size: 1.125rem;
               font-weight: bold;
               font-family: var(--font-shortStack), sans-serif;
               color: $bgcolor;
+              padding-left: 0.75rem;
             }
 
             .modal_button_close {
               color: $bgcolor;
               font-size: 1.25rem;
+              padding-block: 0.5rem;
+              padding-inline: 1rem;
             }
 
             button {
@@ -560,13 +571,15 @@ body {
             padding: 0.75rem;
             padding-bottom: 0rem;
 
-            input {
+            input,
+            textarea {
               padding: 0.5rem 0.75rem;
               font-size: 0.875rem;
               border: 4px solid $mediumcolor;
               border-radius: 0.25rem;
               font-weight: 600;
-              margin-bottom: 0.5rem;
+              margin-bottom: 0.75rem;
+              resize: vertical;
               &:focus {
                 outline: none;
               }
@@ -575,15 +588,46 @@ body {
               }
             }
 
+            .input_container {
+              position: relative;
+              display: flex;
+              align-items: center;
+
+              input {
+                border: 4px solid $mediumcolor;
+                border-radius: 0.25rem;
+                font-size: 1rem;
+                width: 100%;
+                text-align: right;
+              }
+
+              span {
+                position: absolute;
+                left: 14px;
+                top: 13px;
+                font-size: 1rem;
+                color: $mediumcolor;
+                font-weight: 600;
+                pointer-events: none; // Prevent interaction
+                img {
+                  position: absolute;
+                  top: -2px;
+                  @include outline(1px, $darkcolor);
+                }
+              }
+            }
+
             .modal_button {
+              border: 4px solid $darkcolor;
+
               &.confirm {
                 background: #28a745;
               }
               &.delete {
                 background: #dc3545;
               }
-              &.equip {
-                background: #007bff;
+
+              &.margintop {
               }
               color: white;
               padding-block: 0.75rem;
