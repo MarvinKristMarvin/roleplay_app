@@ -3,6 +3,10 @@ et la logique de création de trait.
 
 Puis faire la même chose pour les autres modales. (modifier et creer)
 
+Mettre à jour les stats avec les traits, items équipés et stats de base
+
+Faire les formules de compétences
+
 Ensuite, le state du personnage était mis à jour sur le front, il faut
 remplacer le doc character mdb par le nouveau à chaque modif du state.
 
@@ -10,3 +14,7 @@ Pour ca il faut créer la bdd, faire un serveur qui récupère les routes API
 puis execute des requetes db, puis renvoie les données au front
 
 Je peux me renseigner sur comment faire ca sur nextjs surtout
+
+Ne pas oublier d'ajouter des sons à la fin !
+
+Déployer

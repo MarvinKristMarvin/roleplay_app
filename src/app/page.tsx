@@ -1,11 +1,16 @@
 "use client";
-
 import Image from "next/image";
 import Link from "next/link";
 import { useState } from "react";
 
 export default function HomePage() {
   const [characterName, setCharacterName] = useState("");
+
+  // Format the URL by replacing spaces with underscores
+  const getFormattedUrl = (name: string) => {
+    return `/${name.replace(/ /g, "_")}`;
+  };
+
   return (
     <main className="HomePage">
       <Image
@@ -21,8 +26,9 @@ export default function HomePage() {
           type="text"
           placeholder="Nom du personnage"
           onChange={(e) => setCharacterName(e.target.value)}
+          value={characterName}
         />
-        <Link href={`/${characterName}`}>
+        <Link href={getFormattedUrl(characterName)}>
           <button>Connexion</button>
         </Link>
       </div>

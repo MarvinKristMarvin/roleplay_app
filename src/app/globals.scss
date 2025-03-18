@@ -55,6 +55,7 @@ body {
         object-position: 78% center;
         object-fit: cover;
         z-index: 0;
+        filter: brightness(50%);
       }
       .menu {
         display: flex;
