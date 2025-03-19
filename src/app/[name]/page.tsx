@@ -1282,6 +1282,8 @@ export default function NamePage() {
                 <div className="input_container">
                   <input
                     type="text"
+                    inputMode="numeric"
+                    pattern="[0-9]*"
                     value={character.level}
                     ref={refs.level}
                     onFocus={() => handleFocus(refs.level)}
@@ -1299,6 +1301,7 @@ export default function NamePage() {
                 <div className="input_container">
                   <input
                     type="text"
+                    inputMode="numeric"
                     value={character.experience}
                     ref={refs.XP}
                     onFocus={() => handleFocus(refs.XP)}

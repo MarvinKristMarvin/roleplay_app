@@ -18,3 +18,20 @@ Je peux me renseigner sur comment faire ca sur nextjs surtout
 Ne pas oublier d'ajouter des sons à la fin !
 
 Déployer
+
+TODO
+OK - fixed header
+TEST DEP - refaire page de connexion
+- calculus in number fields (to add or remove amount of life, res, riels, xp, level, base stats, skill points, modify skill level)
+TEST DEP - automatic number keyboard when selecting number fields
+- change life modal name
+- remove or hide stats when value = 0
+- ajouter les sons (open modal, close modal, OK, SUPPRIMER ET CONFIRMATION, change tab)
+- fix big tab swap delay then life modal delay
+- seeding des données des personnages
+- margin bot du bouton + des skills
+- enlever la selection automatique d'un champ
+- le 0 automatique déconne, permettre de mettre rien du tout et gérer le null apres
+- retirer le clavier automatique lors d'un Select
+- faire une modale tuto en cliquant sur bouton tutoriel en haut de tab description
+OK - limiter à 16 lettres le nom du personnage

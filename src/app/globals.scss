@@ -51,6 +51,7 @@ body {
       justify-content: center;
       align-items: center;
       .background {
+        min-height: 100vh;
         max-width: 540px;
         object-position: 78% center;
         object-fit: cover;
@@ -59,11 +60,13 @@ body {
       }
       .menu {
         display: flex;
-        flex-direction: column;
-        width: 80%;
+        justify-content: center;
+        flex-direction: row;
+        width: 100%;
         z-index: 1;
         input {
-          margin-bottom: 0.5rem;
+          width: 12rem;
+          margin-right: 0.75rem;
           border: none;
           border-radius: 0.25rem;
           background-color: transparent;
@@ -77,7 +80,7 @@ body {
         }
         a {
           button {
-            width: 100%;
+            width: 8rem;
 
             border: none;
             border-radius: 0.25rem;
@@ -101,7 +104,9 @@ body {
       padding-top: 0.01rem;
       .main_header {
         padding-top: 0.001rem;
-        position: sticky;
+        width: 100%;
+        max-width: 540px;
+        position: fixed;
         top: 0;
         z-index: 1;
         background-color: $bgcolor;
@@ -126,7 +131,10 @@ body {
         span {
           color: $bgcolor;
           font-weight: 600;
-          font-size: 1.5rem;
+          font-size: 1.25rem;
+        }
+        span {
+          z-index: 2;
         }
       }
       .experience {
@@ -201,6 +209,7 @@ body {
         padding-bottom: 1.25rem;
         padding-inline: 0rem;
         align-items: center;
+
         > * {
           display: flex;
           flex-direction: column;
@@ -228,7 +237,7 @@ body {
       .description_text {
         cursor: pointer;
         p {
-          background-color: $white;
+          background-color: $darkbgcolor;
           color: $darkcolor;
           border-radius: 0.25rem;
           border: solid 4px $mediumcolor;
@@ -239,6 +248,7 @@ body {
         padding-inline: 1.25rem;
         margin-bottom: 0.5rem;
         font-weight: 600;
+        margin-top: 292px;
       }
       .traits {
         color: $darkcolor;
@@ -309,6 +319,8 @@ body {
       }
 
       .items {
+        margin-top: 292px;
+
         margin-inline: 1.25rem;
         display: flex;
         flex-direction: column;
@@ -386,6 +398,8 @@ body {
         }
       }
       .stats_container {
+        margin-top: 292px;
+
         margin-inline: 1.25rem;
         display: flex;
         flex-direction: column;
@@ -425,6 +439,8 @@ body {
         }
       }
       .skills_header {
+        margin-top: 292px;
+
         cursor: pointer;
         margin-inline: 1.25rem;
         display: flex;
