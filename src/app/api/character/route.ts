@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { Character } from "../../../../models/character";
+import connectDB from "../../../../lib/db"; // Adjust the path if needed
 
 interface CharacterData {
   name: string;
@@ -30,6 +31,7 @@ interface CharacterData {
 
 export async function GET(request: NextRequest) {
   try {
+    await connectDB(); // connect to the database before query
     const { searchParams } = new URL(request.url);
     const name = searchParams.get("name");
 
