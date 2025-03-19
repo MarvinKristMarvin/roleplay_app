@@ -83,12 +83,15 @@ export async function PATCH(request: NextRequest) {
     const { id, ...updateData } = await request.json();
     if (!id) return new NextResponse("Id is required", { status: 400 });
 
-    const character = await Character.findById(id);
-    if (!character)
-      return new NextResponse("Character not found", { status: 404 });
+    const character = await Character.findByIdAndUpdate(id, updateData, {
+      new: true,
+      runValidators: true,
+    });
 
-    Object.assign(character, updateData);
-    await character.save();
+    if (!character) {
+      return new NextResponse("Character not found", { status: 404 });
+    }
+
     return new NextResponse(JSON.stringify(character), { status: 200 });
   } catch (error) {
     console.error(error);
