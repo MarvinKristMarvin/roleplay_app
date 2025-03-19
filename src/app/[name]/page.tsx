@@ -253,9 +253,9 @@ export default function NamePage() {
   };
 
   // Usage: Call this function whenever traits change
-  const setCharacterStatsStatTraitsUpdate = (newCharacter: Character) => {
+  /*const setCharacterStatsStatTraitsUpdate = (newCharacter: Character) => {
     setCharacter(updateStatsFromTraits(newCharacter));
-  };
+  };*/
 
   const [character, setCharacter] = useState({
     _id: "initial",
