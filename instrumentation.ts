@@ -1,5 +1,5 @@
-import connectDb from "./lib/db";
+import connectDB from "./lib/db";
 // Executes function once on npm run dev or start
 export function register() {
-  connectDb();
+  connectDB();
 }

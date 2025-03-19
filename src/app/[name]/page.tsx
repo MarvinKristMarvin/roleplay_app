@@ -369,14 +369,10 @@ export default function NamePage() {
 
   // Fetch character data when component mounts or name changes
   useEffect(() => {
-    console.log("hello");
-    console.log(process.env.NEXT_PUBLIC_API_URL);
     const fetchOrCreateCharacter = async () => {
       try {
         // First, try to fetch the character
-        const response = await fetch(
-          `${process.env.NEXT_PUBLIC_API_URL}/api/character?name=${name}`
-        );
+        const response = await fetch(`/api/character?name=${name}`);
 
         if (response.ok) {
           // Character exists, update state with fetched data
@@ -384,16 +380,13 @@ export default function NamePage() {
           setCharacter(characterData);
         } else if (response.status === 404) {
           // Character not found, create a new one
-          const createResponse = await fetch(
-            `${process.env.NEXT_PUBLIC_API_URL}/api/character`,
-            {
-              method: "POST",
-              headers: {
-                "Content-Type": "application/json",
-              },
-              body: JSON.stringify(character), // Send current character state as the default values
-            }
-          );
+          const createResponse = await fetch(`/api/character`, {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify(character), // Send current character state as the default values
+          });
 
           if (createResponse.ok) {
             // Character created successfully, update state with the response
@@ -814,7 +807,7 @@ export default function NamePage() {
       setCharacter((prevCharacter) => {
         const updatedCharacter = { ...prevCharacter };
 
-        fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/character`, {
+        fetch(`/api/character`, {
           method: "PATCH",
           headers: {
             "Content-Type": "application/json",
