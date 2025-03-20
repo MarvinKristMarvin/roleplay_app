@@ -433,10 +433,12 @@ export default function NamePage() {
   const updateCharacterStats = (character: Character) => {
     return {
       ...character,
-      stats: character.stats.map((stat: Stat) => ({
-        ...stat,
-        value: stat.base + stat.traits + stat.items,
-      })),
+      stats: character.stats
+        .map((stat: Stat) => ({
+          ...stat,
+          value: stat.base + stat.traits + stat.items,
+        }))
+        .filter((stat) => stat.value !== 0), // Remove stats where value is 0
     };
   };
 
@@ -1282,7 +1284,7 @@ export default function NamePage() {
                 <div className="input_container">
                   <input
                     type="text"
-                    inputMode="decimal"
+                    inputMode="numeric"
                     value={character.level}
                     ref={refs.level}
                     onFocus={() => handleFocus(refs.level)}
@@ -1301,7 +1303,6 @@ export default function NamePage() {
                   <input
                     type="text"
                     inputMode="numeric"
-                    pattern="[0-9.,+-]*"
                     value={character.experience}
                     ref={refs.XP}
                     onFocus={() => handleFocus(refs.XP)}
@@ -1339,7 +1340,7 @@ export default function NamePage() {
           <div className="modal">
             <div className="modal_window">
               <div className="modal_header">
-                <p className="modal_title">Horgrim</p>
+                <p className="modal_title">Modifier</p>
                 <button
                   className="modal_button_close"
                   onClick={() => setOpenedModal("")}
@@ -1350,7 +1351,8 @@ export default function NamePage() {
               <div className="modal_content">
                 <div className="input_container">
                   <input
-                    type="tel"
+                    type="text"
+                    inputMode="numeric"
                     value={character.actuallife}
                     ref={refs.life}
                     onFocus={() => handleFocus(refs.life)}
@@ -1375,7 +1377,8 @@ export default function NamePage() {
                 </div>
                 <div className="input_container">
                   <input
-                    type="number"
+                    type="text"
+                    inputMode="numeric"
                     value={character.resurrections}
                     ref={refs.resurrections}
                     onFocus={() => handleFocus(refs.resurrections)}
@@ -1401,6 +1404,7 @@ export default function NamePage() {
                 <div className="input_container">
                   <input
                     type="text"
+                    inputMode="numeric"
                     value={character.riels}
                     ref={refs.riels}
                     onFocus={() => handleFocus(refs.riels)}
@@ -1616,6 +1620,7 @@ export default function NamePage() {
                     }
                     placeholder="Encombrement"
                     styles={customStyles}
+                    onFocus={(e) => e.preventDefault()} // Prevents input from being focused
                   />
 
                   <Select
@@ -1628,6 +1633,7 @@ export default function NamePage() {
                       setSelectedType(selectedOption)
                     }
                     styles={customStyles}
+                    onFocus={(e) => e.preventDefault()} // Prevents input from being focused
                   />
                 </div>
                 <textarea
@@ -1738,6 +1744,7 @@ export default function NamePage() {
               <div className="modal_content">
                 <input
                   type="text"
+                  inputMode="numeric"
                   defaultValue={modalInfos.base}
                   id="stat_base"
                 />
@@ -1775,6 +1782,7 @@ export default function NamePage() {
               <div className="modal_content">
                 <input
                   type="text"
+                  inputMode="numeric"
                   value={tempSkillpoints}
                   onChange={(e) => {
                     const inputValue = e.target.value;
@@ -1832,6 +1840,7 @@ export default function NamePage() {
                 />
                 <input
                   type="text"
+                  inputMode="numeric"
                   placeholder="Niveau"
                   defaultValue={modalInfos.level}
                   id="skill_level"
@@ -1883,7 +1892,12 @@ export default function NamePage() {
               </div>
               <div className="modal_content">
                 <input type="text" placeholder="Nom" id="new_skill_name" />
-                <input type="text" placeholder="Niveau" id="new_skill_level" />
+                <input
+                  type="text"
+                  inputMode="numeric"
+                  placeholder="Niveau"
+                  id="new_skill_level"
+                />
                 <textarea
                   placeholder="Description"
                   rows={3}
