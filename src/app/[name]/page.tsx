@@ -497,10 +497,14 @@ export default function NamePage() {
     resurrections: useRef<HTMLInputElement>(null),
     riels: useRef<HTMLInputElement>(null),
   };
-  const handleFocus = (ref: React.RefObject<HTMLInputElement | null>) => {
+  // Handle focus and place cursor at the end
+  const handleFocus = (ref: React.RefObject<HTMLInputElement>) => {
     if (ref.current) {
-      const length = ref.current.value.length;
-      ref.current.setSelectionRange(length, length);
+      // Add a small delay to ensure the cursor is set correctly
+      setTimeout(() => {
+        const length = ref.current!.value.length;
+        ref.current!.setSelectionRange(length, length);
+      }, 0); // 0ms delay ensures it runs after the focus event
     }
   };
 
@@ -1335,6 +1339,7 @@ export default function NamePage() {
                 <div className="input_container">
                   <input
                     type="text"
+                    inputMode="numeric"
                     defaultValue={String(character.level)}
                     ref={refs.level}
                     onFocus={() => {
@@ -1348,6 +1353,7 @@ export default function NamePage() {
                 <div className="input_container">
                   <input
                     type="text"
+                    inputMode="numeric"
                     defaultValue={String(character.experience)}
                     ref={refs.XP}
                     onFocus={() => {
@@ -1452,6 +1458,7 @@ export default function NamePage() {
                 <div className="input_container">
                   <input
                     type="text"
+                    inputMode="numeric"
                     defaultValue={String(character.actuallife)}
                     ref={refs.life}
                     onFocus={() => {
@@ -1472,6 +1479,7 @@ export default function NamePage() {
                 <div className="input_container">
                   <input
                     type="text"
+                    inputMode="numeric"
                     defaultValue={String(character.resurrections)}
                     ref={refs.resurrections}
                     onFocus={() => {
@@ -1493,6 +1501,7 @@ export default function NamePage() {
                 <div className="input_container">
                   <input
                     type="text"
+                    inputMode="numeric"
                     defaultValue={String(character.riels)}
                     ref={refs.riels}
                     onFocus={() => {

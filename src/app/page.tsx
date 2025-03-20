@@ -32,7 +32,7 @@ export default function HomePage() {
           placeholder="Nom du personnage"
           onChange={(e) => setCharacterName(e.target.value)}
           value={characterName}
-          maxLength={16}
+          maxLength={17}
         />
         <Link href={getFormattedUrl(characterName)}>
           <button>Connexion</button>

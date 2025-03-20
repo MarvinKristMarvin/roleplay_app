@@ -24,10 +24,11 @@ B OK - calculus in number fields (to add or remove amount of life, res, riels, x
 B - ajouter les sons (open modal, close modal, OK, SUPPRIMER ET CONFIRMATION, change tab)
 B - fix big tab swap delay then life modal delay (others have some delay too sometimes)
 B - seeding des données des personnages
-C - enlever la selection automatique d'un champ OU plutot tout selectionner
+C OK - clavier numerique pour vie et xp
+C TEST DEP - enlever la selection automatique d'un champ OU plutot tout selectionner
 A OK - le 0 automatique déconne, permettre de mettre rien du tout et gérer le null apres
 B OK - retirer le clavier automatique lors d'un Select
 B OK - faire une modale tuto en cliquant sur bouton tutoriel en haut de tab description
-D TEST DEP - remove blue selection when clicking on mobile
-D - s'assurer que la selection de category est bien égale à la catégorie de l'objet modifié, et inventaire lors de la création
+D OK - remove blue selection when clicking on mobile
+D VOIR DURANT TESTS - s'assurer que la selection de category est bien égale à la catégorie de l'objet modifié, et inventaire lors de la création
 D TEST DEP - réduire padding autour de l'app pour application plus claire
