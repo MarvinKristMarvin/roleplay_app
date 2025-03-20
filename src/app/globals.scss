@@ -114,13 +114,13 @@ body {
       }
       .name_and_level {
         cursor: pointer;
-        margin-inline: 1.25rem;
+        margin-inline: 0.5rem;
         display: flex;
         justify-content: space-between;
         align-items: center;
         padding-top: 0.75rem;
         padding-bottom: 0.75rem;
-        margin-top: 1.25rem;
+        margin-top: 0.5rem;
         background-color: $darkcolor;
         padding-inline: 1rem;
         border-radius: 0.25rem;
@@ -139,8 +139,7 @@ body {
         }
       }
       .experience {
-        margin-inline: 1.25rem;
-
+        margin-inline: 0.5rem;
         height: 0.75rem;
         border: $darkcolor solid 4px;
 
@@ -160,7 +159,7 @@ body {
         display: flex;
         justify-content: space-between;
         align-items: center;
-        margin-inline: 1.25rem;
+        margin-inline: 0.5rem;
         background-color: $darkbgcolor;
         padding-block: 0.5rem;
         padding-inline: 0.75rem;
@@ -237,12 +236,12 @@ body {
         }
       }
       .tutorial_button {
-        margin-top: 292px;
+        margin-top: 276px;
         font-family: var(--font-merienda), sans-serif;
         font-size: 1rem;
         font-weight: 900;
-        margin-inline: 1.25rem;
-        width: calc(100% - 2.5rem);
+        margin-inline: 0.5rem;
+        width: calc(100% - 1rem);
         border-radius: 0.25rem;
         border: solid 4px $darkcolor;
         background-color: $darkbgcolor;
@@ -262,15 +261,13 @@ body {
           padding-block: 0.5rem;
           font-size: 0.875rem;
         }
-        padding-inline: 1.25rem;
+        margin-inline: 0.5rem;
         margin-bottom: 0.5rem;
         font-weight: 600;
       }
       .traits {
         color: $darkcolor;
-
-        padding: 1.25rem;
-        padding-top: 0rem;
+        margin-inline: 0.5rem;
         font-size: 0.875rem;
         font-weight: 600;
 
@@ -296,14 +293,13 @@ body {
           background-color: $bgcolor;
           color: $mediumcolor;
           cursor: pointer;
-          margin-top: 1rem;
         }
       }
       .inventory_header {
         cursor: pointer;
         display: flex;
         justify-content: space-between;
-        margin-inline: 1.25rem;
+        margin-inline: 0.5rem;
         background-color: $darkbgcolor;
         border-radius: 0.25rem;
         padding-inline: 0.75rem;
@@ -335,9 +331,9 @@ body {
       }
 
       .items {
-        margin-top: 292px;
+        margin-top: 276px;
 
-        margin-inline: 1.25rem;
+        margin-inline: 0.5rem;
         display: flex;
         flex-direction: column;
         button {
@@ -349,9 +345,8 @@ body {
           border: solid 4px $mediumcolor;
           background-color: transparent;
           color: $mediumcolor;
-          margin-bottom: 1.25rem;
+          margin-bottom: 0.5rem;
           cursor: pointer;
-          margin-top: 0.5rem;
         }
         .item {
           &:last-child {
@@ -414,9 +409,9 @@ body {
         }
       }
       .stats_container {
-        margin-top: 292px;
+        margin-top: 276px;
 
-        margin-inline: 1.25rem;
+        margin-inline: 0.5rem;
         display: flex;
         flex-direction: column;
 
@@ -455,10 +450,10 @@ body {
         }
       }
       .skills_header {
-        margin-top: 292px;
+        margin-top: 276px;
 
         cursor: pointer;
-        margin-inline: 1.25rem;
+        margin-inline: 0.5rem;
         display: flex;
         flex-direction: row;
         justify-content: space-between;
@@ -483,7 +478,7 @@ body {
         }
       }
       .skills_container {
-        margin-inline: 1.25rem;
+        margin-inline: 0.5rem;
         display: flex;
         flex-direction: column;
 
@@ -534,15 +529,15 @@ body {
         padding-block: 0rem;
         font-size: 1.5rem;
         font-weight: 900;
-        width: calc(100% - 2.5rem);
-        margin-inline: 1.25rem;
+        width: calc(100% - 1rem);
+        margin-inline: 0.5rem;
         border-radius: 0.25rem;
         border: solid 4px $mediumcolor;
         background-color: transparent;
         color: $mediumcolor;
         cursor: pointer;
-        margin-top: 0.5rem;
-        margin-bottom: 1.25rem;
+
+        margin-bottom: 0.5rem;
       }
       .modal {
         position: fixed;
