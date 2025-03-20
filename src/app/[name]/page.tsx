@@ -4,7 +4,7 @@ import React from "react";
 import { useParams } from "next/navigation";
 import Image from "next/image";
 import { useState } from "react";
-import Select from "react-select";
+import Select, { components } from "react-select";
 import { StylesConfig } from "react-select";
 import { useEffect, useRef } from "react";
 
@@ -480,7 +480,14 @@ export default function NamePage() {
   );
 
   // Handles skillpoints input value
-  const [tempSkillpoints, setTempSkillpoints] = useState(character.skillpoints);
+  const [tempSkillpoints, setTempSkillpoints] = useState<string | number>(
+    character.skillpoints
+  );
+  const [tempLife, setTempLife] = useState("");
+  const [tempResurrections, setTempResurrections] = useState("");
+  const [tempRiels, setTempRiels] = useState("");
+  const [tempLevel, setTempLevel] = useState("");
+  const [tempExperience, setTempExperience] = useState("");
 
   // Handles input focus, cursor at the end
   const refs = {
@@ -563,13 +570,30 @@ export default function NamePage() {
           const updatedDescription = (
             document.getElementById("skill_description") as HTMLTextAreaElement
           )?.value.trim();
-          const updatedLevel =
-            parseInt(
-              (document.getElementById("skill_level") as HTMLInputElement)
-                ?.value,
-              10
-            ) || modalInfos.level;
+          const levelInput = (
+            document.getElementById("skill_level") as HTMLInputElement
+          )?.value.trim();
+
+          let updatedLevel;
+
+          if (/^[+\-]\d+$/.test(levelInput)) {
+            // If input is "+X" or "-X", add/subtract from current level
+            updatedLevel = modalInfos.level + Number(levelInput);
+          } else if (/^[\d+\-*/\s]+$/.test(levelInput)) {
+            // If it's a mathematical expression (e.g., "5+5"), evaluate it
+            try {
+              const evaluated = eval(levelInput);
+              updatedLevel = !isNaN(evaluated) ? evaluated : modalInfos.level;
+            } catch {
+              updatedLevel = modalInfos.level;
+            }
+          } else {
+            // Invalid input keeps the previous level
+            updatedLevel = modalInfos.level;
+          }
+
           if (!updatedName) return prev;
+
           updatedCharacter = {
             ...prev,
             skills: prev.skills.map((skill) =>
@@ -585,13 +609,32 @@ export default function NamePage() {
           };
           break;
         }
+
         case "stat": {
-          const updatedBase =
-            parseInt(
-              (document.getElementById("stat_base") as HTMLInputElement)?.value,
-              10
-            ) || 0;
+          const baseInput = (
+            document.getElementById("stat_base") as HTMLInputElement
+          )?.value.trim();
+
+          let updatedBase;
+
+          if (/^[+\-]\d+$/.test(baseInput)) {
+            // If input is "+X" or "-X", add/subtract from current base value
+            updatedBase = modalInfos.base + Number(baseInput);
+          } else if (/^[\d+\-*/\s]+$/.test(baseInput)) {
+            // If input is a valid arithmetic expression (e.g., "5+5")
+            try {
+              const evaluated = eval(baseInput);
+              updatedBase = !isNaN(evaluated) ? evaluated : modalInfos.base;
+            } catch {
+              updatedBase = modalInfos.base;
+            }
+          } else {
+            // Invalid input keeps the previous base value
+            updatedBase = modalInfos.base;
+          }
+
           console.log(updatedBase);
+
           updatedCharacter = {
             ...prev,
             stats: prev.stats.map((stat) =>
@@ -957,6 +1000,14 @@ export default function NamePage() {
       {/* DESCRIPTION */}
       {tab === "description" ? (
         <>
+          <button
+            className="tutorial_button"
+            onClick={() => {
+              setOpenedModal("tutorial");
+            }}
+          >
+            TUTORIEL
+          </button>
           <div
             className="description_text"
             onClick={() => setOpenedModal("modify_description")}
@@ -1284,43 +1335,92 @@ export default function NamePage() {
                 <div className="input_container">
                   <input
                     type="text"
-                    inputMode="numeric"
-                    value={character.level}
+                    defaultValue={String(character.level)}
                     ref={refs.level}
-                    onFocus={() => handleFocus(refs.level)}
-                    onChange={(e) =>
-                      setCharacter({
-                        ...character,
-                        level: isNaN(parseInt(e.target.value))
-                          ? 0
-                          : parseInt(e.target.value),
-                      })
-                    }
+                    onFocus={() => {
+                      handleFocus(refs.level);
+                      setTempLevel("");
+                    }}
+                    onChange={(e) => setTempLevel(e.target.value)}
                   />
                   <span>Niveau</span>
                 </div>
                 <div className="input_container">
                   <input
                     type="text"
-                    inputMode="numeric"
-                    value={character.experience}
+                    defaultValue={String(character.experience)}
                     ref={refs.XP}
-                    onFocus={() => handleFocus(refs.XP)}
-                    onChange={(e) =>
-                      setCharacter({
-                        ...character,
-                        experience: isNaN(parseInt(e.target.value))
-                          ? 0
-                          : parseInt(e.target.value),
-                      })
-                    }
+                    onFocus={() => {
+                      handleFocus(refs.XP);
+                      setTempExperience("");
+                    }}
+                    onChange={(e) => setTempExperience(e.target.value)}
                   />
                   <span>XP</span>
                 </div>
-
                 <button
                   className="modal_button confirm"
                   onClick={() => {
+                    // Process temporary values and update character
+                    setCharacter((prevCharacter) => {
+                      const newCharacter = { ...prevCharacter };
+
+                      // Process level
+                      if (tempLevel) {
+                        const currentLevel = prevCharacter.level || 0;
+                        const input = String(tempLevel).trim();
+
+                        if (/^[+\-]\d+$/.test(input)) {
+                          // If input is "+X" or "-X", add/subtract from current value
+                          newCharacter.level = currentLevel + Number(input);
+                        } else if (/^[\d+\-*/\s]+$/.test(input)) {
+                          // If it's a mathematical expression, evaluate it
+                          try {
+                            const evaluated = eval(input);
+                            newCharacter.level = !isNaN(evaluated)
+                              ? evaluated
+                              : character.level;
+                          } catch {
+                            newCharacter.level = character.level;
+                          }
+                        } else {
+                          // Invalid input sets value to 0
+                          newCharacter.level = character.level;
+                        }
+                      }
+
+                      // Process experience
+                      if (tempExperience) {
+                        const currentExperience = prevCharacter.experience || 0;
+                        const input = String(tempExperience).trim();
+
+                        if (/^[+\-]\d+$/.test(input)) {
+                          // If input is "+X" or "-X", add/subtract from current value
+                          newCharacter.experience =
+                            currentExperience + Number(input);
+                        } else if (/^[\d+\-*/\s]+$/.test(input)) {
+                          // If it's a mathematical expression, evaluate it
+                          try {
+                            const evaluated = eval(input);
+                            newCharacter.experience = !isNaN(evaluated)
+                              ? evaluated
+                              : character.experience;
+                          } catch {
+                            newCharacter.experience = character.experience;
+                          }
+                        } else {
+                          // Invalid input sets value to 0
+                          newCharacter.experience = character.experience;
+                        }
+                      }
+
+                      return newCharacter;
+                    });
+
+                    // Reset temporary values
+                    setTempLevel("");
+                    setTempExperience("");
+
                     setOpenedModal("");
                     handlePatch();
                   }}
@@ -1352,20 +1452,14 @@ export default function NamePage() {
                 <div className="input_container">
                   <input
                     type="text"
-                    inputMode="numeric"
-                    value={character.actuallife}
+                    defaultValue={String(character.actuallife)}
                     ref={refs.life}
-                    onFocus={() => handleFocus(refs.life)}
-                    onChange={(e) =>
-                      setCharacter({
-                        ...character,
-                        actuallife: isNaN(parseInt(e.target.value))
-                          ? 0
-                          : parseInt(e.target.value),
-                      })
-                    }
+                    onFocus={() => {
+                      handleFocus(refs.life);
+                      setTempLife("");
+                    }}
+                    onChange={(e) => setTempLife(e.target.value)}
                   />
-
                   <span>
                     <Image
                       src="/heart5-Photoroom.png"
@@ -1378,18 +1472,13 @@ export default function NamePage() {
                 <div className="input_container">
                   <input
                     type="text"
-                    inputMode="numeric"
-                    value={character.resurrections}
+                    defaultValue={String(character.resurrections)}
                     ref={refs.resurrections}
-                    onFocus={() => handleFocus(refs.resurrections)}
-                    onChange={(e) =>
-                      setCharacter({
-                        ...character,
-                        resurrections: isNaN(parseInt(e.target.value))
-                          ? 0
-                          : parseInt(e.target.value),
-                      })
-                    }
+                    onFocus={() => {
+                      handleFocus(refs.resurrections);
+                      setTempResurrections("");
+                    }}
+                    onChange={(e) => setTempResurrections(e.target.value)}
                   />
                   <span>
                     {" "}
@@ -1404,18 +1493,13 @@ export default function NamePage() {
                 <div className="input_container">
                   <input
                     type="text"
-                    inputMode="numeric"
-                    value={character.riels}
+                    defaultValue={String(character.riels)}
                     ref={refs.riels}
-                    onFocus={() => handleFocus(refs.riels)}
-                    onChange={(e) =>
-                      setCharacter({
-                        ...character,
-                        riels: isNaN(parseInt(e.target.value))
-                          ? 0
-                          : parseInt(e.target.value),
-                      })
-                    }
+                    onFocus={() => {
+                      handleFocus(refs.riels);
+                      setTempRiels("");
+                    }}
+                    onChange={(e) => setTempRiels(e.target.value)}
                   />
                   <span>
                     {" "}
@@ -1430,12 +1514,155 @@ export default function NamePage() {
                 <button
                   className="modal_button confirm"
                   onClick={() => {
+                    // Process temporary values and update character
+                    setCharacter((prevCharacter) => {
+                      const newCharacter = { ...prevCharacter };
+
+                      // Process life
+                      if (tempLife) {
+                        const currentLife = prevCharacter.actuallife || 0;
+                        const input = String(tempLife).trim();
+
+                        if (/^[+\-]\d+$/.test(input)) {
+                          // If input is "+X" or "-X", add/subtract from current value
+                          newCharacter.actuallife = currentLife + Number(input);
+                        } else if (/^[\d+\-*/\s]+$/.test(input)) {
+                          // If it's a mathematical expression, evaluate it
+                          try {
+                            const evaluated = eval(input);
+                            newCharacter.actuallife = !isNaN(evaluated)
+                              ? evaluated
+                              : character.actuallife;
+                          } catch {
+                            newCharacter.actuallife = character.actuallife;
+                          }
+                        } else {
+                          // Invalid input sets value to 0
+                          newCharacter.actuallife = character.actuallife;
+                        }
+                      }
+
+                      // Process resurrections
+                      if (tempResurrections) {
+                        const currentResurrections =
+                          prevCharacter.resurrections || 0;
+                        const input = String(tempResurrections).trim();
+
+                        if (/^[+\-]\d+$/.test(input)) {
+                          // If input is "+X" or "-X", add/subtract from current value
+                          newCharacter.resurrections =
+                            currentResurrections + Number(input);
+                        } else if (/^[\d+\-*/\s]+$/.test(input)) {
+                          // If it's a mathematical expression, evaluate it
+                          try {
+                            const evaluated = eval(input);
+                            newCharacter.resurrections = !isNaN(evaluated)
+                              ? evaluated
+                              : character.resurrections;
+                          } catch {
+                            newCharacter.resurrections =
+                              character.resurrections;
+                          }
+                        } else {
+                          // Invalid input sets value to 0
+                          newCharacter.resurrections = character.resurrections;
+                        }
+                      }
+
+                      // Process riels
+                      if (tempRiels) {
+                        const currentRiels = prevCharacter.riels || 0;
+                        const input = String(tempRiels).trim();
+
+                        if (/^[+\-]\d+$/.test(input)) {
+                          // If input is "+X" or "-X", add/subtract from current value
+                          newCharacter.riels = currentRiels + Number(input);
+                        } else if (/^[\d+\-*/\s]+$/.test(input)) {
+                          // If it's a mathematical expression, evaluate it
+                          try {
+                            const evaluated = eval(input);
+                            newCharacter.riels = !isNaN(evaluated)
+                              ? evaluated
+                              : character.riels;
+                          } catch {
+                            newCharacter.riels = character.riels;
+                          }
+                        } else {
+                          // Invalid input sets value to 0
+                          newCharacter.riels = character.riels;
+                        }
+                      }
+
+                      return newCharacter;
+                    });
+
+                    // Reset temporary values
+                    setTempLife("");
+                    setTempResurrections("");
+                    setTempRiels("");
+
                     setOpenedModal("");
                     handlePatch();
                   }}
                 >
                   OK
                 </button>
+              </div>
+            </div>
+          </div>
+        </>
+      ) : (
+        ""
+      )}
+      {/* MODAL TUTORIAL */}
+      {isClient && openedModal === "tutorial" ? (
+        <>
+          <div className="modal">
+            <div className="modal_window">
+              <div className="modal_header">
+                <p className="modal_title">Tutoriel</p>
+                <button
+                  className="modal_button_close"
+                  onClick={() => setOpenedModal("")}
+                >
+                  &#10006;
+                </button>
+              </div>
+              <div className="modal_content">
+                <div className="section">
+                  <h2 className="section_title">Fonctionnement</h2>
+                  <p className="explications">
+                    Appuyez sur un élément pour modifier ses valeurs. Sur un
+                    champ de saisie de nombre, vous pouvez saisir + ou - pour
+                    effectuer une addition ou soustraction.
+                  </p>
+                </div>
+                <div className="section">
+                  <h2 className="section_title">Stats</h2>
+                  <p className="explications">
+                    Les stats peuvent être modifiées en écrivant +1 NomDeMaStat
+                    dans une aptitude ou une description d&apos;objet équipé, ou
+                    alors en modifiant les stats de base dans l&apos;onglet
+                    Stats. La stat SLOT augmente les places d&apos;inventaire.
+                  </p>
+                </div>
+                <div className="section">
+                  <h2 className="section_title">Objets</h2>
+                  <p className="explications">
+                    Un objet a une valeur d&apos;encombrement qui spécifie la
+                    place qu&apos;il prend dans l&apos;inventaire. Un objet
+                    équipé n&apos;encombre pas.
+                  </p>
+                </div>
+                <div className="section">
+                  <h2 className="section_title">Compétences</h2>
+                  <p className="explications">
+                    Vous pouvez écrire des formules entre parenthèses dans vos
+                    compétences, par exemple &quot;Inflige (1.5 FOR + AGI + 10)
+                    dégâts&quot;. Les valeurs seront calculées automatiquement
+                    avec vos stats
+                  </p>
+                </div>
               </div>
             </div>
           </div>
@@ -1620,7 +1847,15 @@ export default function NamePage() {
                     }
                     placeholder="Encombrement"
                     styles={customStyles}
-                    onFocus={(e) => e.preventDefault()} // Prevents input from being focused
+                    components={{
+                      Input: (props) => (
+                        <components.Input
+                          {...props}
+                          readOnly
+                          inputMode="none"
+                        />
+                      ),
+                    }}
                   />
 
                   <Select
@@ -1633,7 +1868,15 @@ export default function NamePage() {
                       setSelectedType(selectedOption)
                     }
                     styles={customStyles}
-                    onFocus={(e) => e.preventDefault()} // Prevents input from being focused
+                    components={{
+                      Input: (props) => (
+                        <components.Input
+                          {...props}
+                          readOnly
+                          inputMode="none"
+                        />
+                      ),
+                    }}
                   />
                 </div>
                 <textarea
@@ -1692,6 +1935,15 @@ export default function NamePage() {
                     }
                     placeholder="Encombrement"
                     styles={customStyles}
+                    components={{
+                      Input: (props) => (
+                        <components.Input
+                          {...props}
+                          readOnly
+                          inputMode="none"
+                        />
+                      ),
+                    }}
                   />
 
                   <Select
@@ -1702,6 +1954,15 @@ export default function NamePage() {
                     }
                     placeholder="Type"
                     styles={customStyles}
+                    components={{
+                      Input: (props) => (
+                        <components.Input
+                          {...props}
+                          readOnly
+                          inputMode="none"
+                        />
+                      ),
+                    }}
                   />
                 </div>
                 <textarea
@@ -1785,23 +2046,37 @@ export default function NamePage() {
                   inputMode="numeric"
                   value={tempSkillpoints}
                   onChange={(e) => {
-                    const inputValue = e.target.value;
-                    const parsedValue = parseInt(inputValue, 10);
-
-                    if (!isNaN(parsedValue)) {
-                      setTempSkillpoints(parsedValue);
-                    } else if (inputValue === "") {
-                      setTempSkillpoints(0);
-                    }
+                    setTempSkillpoints(e.target.value);
                   }}
                 />
                 <button
                   className="modal_button confirm margintop"
                   onClick={() => {
-                    setCharacter((prevCharacter) => ({
-                      ...prevCharacter,
-                      skillpoints: tempSkillpoints >= 0 ? tempSkillpoints : 0,
-                    }));
+                    setCharacter((prevCharacter) => {
+                      const currentSkillpoints = prevCharacter.skillpoints || 0;
+                      const input = String(tempSkillpoints).trim(); // Ensure string for processing
+
+                      let newSkillpoints;
+
+                      if (/^[+\-]\d+$/.test(input)) {
+                        // If input is just "+X" or "-X", add it to the current value
+                        newSkillpoints = currentSkillpoints + Number(input);
+                      } else if (/^[\d+\-*/\s]+$/.test(input)) {
+                        // If it's a mathematical expression (e.g., "5+5"), evaluate it
+                        try {
+                          const evaluated = eval(input);
+                          newSkillpoints = !isNaN(evaluated) ? evaluated : 0;
+                        } catch {
+                          newSkillpoints = 0;
+                        }
+                      } else {
+                        // Invalid input sets skillpoints to 0
+                        newSkillpoints = 0;
+                      }
+                      setTempSkillpoints(newSkillpoints);
+                      return { ...prevCharacter, skillpoints: newSkillpoints };
+                    });
+
                     setOpenedModal("");
                     handlePatch();
                   }}

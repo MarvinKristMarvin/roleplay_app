@@ -20,19 +20,12 @@ Ne pas oublier d'ajouter des sons à la fin !
 Déployer
 
 TODO
-OK - fixed header
-OK - refaire page de connexion
-- calculus in number fields (to add or remove amount of life, res, riels, xp, level, base stats, skill points, modify skill level)
-OK - automatic number keyboard when selecting number fields
-OK - change life modal name
-OK - remove stats when value = 0
-- ajouter les sons (open modal, close modal, OK, SUPPRIMER ET CONFIRMATION, change tab)
-- fix big tab swap delay then life modal delay
-- seeding des données des personnages
-OK - margin bot du bouton + des skills
-- enlever la selection automatique d'un champ
-- le 0 automatique déconne, permettre de mettre rien du tout et gérer le null apres
-TESTER DEP - retirer le clavier automatique lors d'un Select
-- faire une modale tuto en cliquant sur bouton tutoriel en haut de tab description
-OK - limiter à 16 lettres le nom du personnage
-- remove blue selection when clicking on mobile
+B OK - calculus in number fields (to add or remove amount of life, res, riels, xp, level, base stats, skill points, modify skill level)
+B - ajouter les sons (open modal, close modal, OK, SUPPRIMER ET CONFIRMATION, change tab)
+B - fix big tab swap delay then life modal delay (others have some delay too sometimes)
+C - seeding des données des personnages
+C - enlever la selection automatique d'un champ OU plutot tout selectionner
+A OK - le 0 automatique déconne, permettre de mettre rien du tout et gérer le null apres
+B TEST DEP - retirer le clavier automatique lors d'un Select
+B TEST DEP - faire une modale tuto en cliquant sur bouton tutoriel en haut de tab description
+C - remove blue selection when clicking on mobile
