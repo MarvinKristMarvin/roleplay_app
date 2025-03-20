@@ -117,6 +117,24 @@ type Character = {
   skills: Skill[];
 };
 
+const playSound = (soundFile: string) => {
+  const audio = new Audio(`/sounds/${soundFile}`); // Load sound dynamically
+  audio.currentTime = 0; // Restart if already playing
+  // Adjust volume based on sound type
+  if (soundFile.includes("negative1")) {
+    audio.volume = 0.22; // delete
+  } else if (soundFile.includes("neutral1")) {
+    audio.volume = 0.3; // ok
+  } else if (soundFile.includes("neutral2")) {
+    audio.volume = 0.85; // close modal
+  } else if (soundFile.includes("neutral5")) {
+    audio.volume = 0.25; // open modal
+  } else if (soundFile.includes("neutral7")) {
+    audio.volume = 0.25; // change tab
+  }
+  audio.play().catch((err) => console.error("Error playing sound:", err));
+};
+
 export default function NamePage() {
   const { name } = useParams();
 
@@ -885,14 +903,20 @@ export default function NamePage() {
       <header className="main_header">
         <div
           className="name_and_level"
-          onClick={() => setOpenedModal("modify_experience")}
+          onClick={() => {
+            playSound("neutral5.mp3");
+            setOpenedModal("modify_experience");
+          }}
         >
           <h1>{character.name.replace(/_/g, " ")}</h1>
           <span className="lvl">{character.level}</span>
         </div>
         <div
           className="experience"
-          onClick={() => setOpenedModal("modify_experience")}
+          onClick={() => {
+            setOpenedModal("modify_experience");
+            playSound("neutral5.mp3");
+          }}
         >
           <div
             className="experience_bar"
@@ -901,7 +925,10 @@ export default function NamePage() {
         </div>
         <div
           className="life_and_resurrection"
-          onClick={() => setOpenedModal("modify_infos")}
+          onClick={() => {
+            setOpenedModal("modify_infos");
+            playSound("neutral5.mp3");
+          }}
         >
           <div className="life">
             <Image
@@ -930,7 +957,10 @@ export default function NamePage() {
         </div>
         <header
           className="inventory_header"
-          onClick={() => setOpenedModal("modify_infos")}
+          onClick={() => {
+            setOpenedModal("modify_infos");
+            playSound("neutral5.mp3");
+          }}
         >
           <div className="gold">
             <Image
@@ -958,7 +988,13 @@ export default function NamePage() {
           </div>
         </header>
         <div className="tabs">
-          <div className="description" onClick={() => setTab("description")}>
+          <div
+            className="description"
+            onClick={() => {
+              setTab("description");
+              playSound("neutral7.mp3");
+            }}
+          >
             <Image
               src="/fiche1-Photoroom.png"
               alt="description"
@@ -968,7 +1004,13 @@ export default function NamePage() {
             />
             <span>description</span>
           </div>
-          <div className="inventory" onClick={() => setTab("inventory")}>
+          <div
+            className="inventory"
+            onClick={() => {
+              setTab("inventory");
+              playSound("neutral7.mp3");
+            }}
+          >
             <Image
               src="/inventory3-Photoroom.png"
               alt="inventory"
@@ -978,7 +1020,13 @@ export default function NamePage() {
             />
             <span>inventory</span>
           </div>
-          <div className="stats" onClick={() => setTab("stats")}>
+          <div
+            className="stats"
+            onClick={() => {
+              setTab("stats");
+              playSound("neutral7.mp3");
+            }}
+          >
             <Image
               src="/dice4-Photoroom.png"
               alt="stats"
@@ -988,7 +1036,13 @@ export default function NamePage() {
             />
             <span>stats</span>
           </div>
-          <div className="skills" onClick={() => setTab("skills")}>
+          <div
+            className="skills"
+            onClick={() => {
+              setTab("skills");
+              playSound("neutral7.mp3");
+            }}
+          >
             <Image
               src="/competences2-Photoroom.png"
               alt="skills"
@@ -1008,13 +1062,17 @@ export default function NamePage() {
             className="tutorial_button"
             onClick={() => {
               setOpenedModal("tutorial");
+              playSound("neutral5.mp3");
             }}
           >
             TUTORIEL
           </button>
           <div
             className="description_text"
-            onClick={() => setOpenedModal("modify_description")}
+            onClick={() => {
+              setOpenedModal("modify_description");
+              playSound("neutral5.mp3");
+            }}
           >
             <p style={{ whiteSpace: "pre-wrap" }}>
               {character.description || "Description du personnage"}
@@ -1027,6 +1085,7 @@ export default function NamePage() {
                 className="trait"
                 onClick={() => {
                   setOpenedModal("modify_trait");
+                  playSound("neutral5.mp3");
                   setModalInfos({
                     type: "trait",
                     name: trait.name,
@@ -1040,6 +1099,7 @@ export default function NamePage() {
             <button
               onClick={() => {
                 setOpenedModal("create_trait");
+                playSound("neutral5.mp3");
                 setModalInfos({ type: "trait", name: "", description: "" });
               }}
             >
@@ -1093,6 +1153,7 @@ export default function NamePage() {
                   className="item"
                   onClick={() => {
                     setOpenedModal("modify_item");
+                    playSound("neutral5.mp3");
                     setModalInfos({
                       type: "item",
                       name: item.name,
@@ -1205,6 +1266,7 @@ export default function NamePage() {
             <button
               onClick={() => {
                 setOpenedModal("create_item");
+                playSound("neutral5.mp3");
                 setModalInfos({
                   type: "item",
                   name: "",
@@ -1237,6 +1299,7 @@ export default function NamePage() {
                   className="stat"
                   onClick={() => {
                     setOpenedModal("modify_stat");
+                    playSound("neutral5.mp3");
                     setModalInfos({
                       type: "stat",
                       name: stat.name,
@@ -1263,7 +1326,10 @@ export default function NamePage() {
           <header
             className="skills_header"
             onClick={() => {
-              setOpenedModal("modify_skillpoints");
+              {
+                setOpenedModal("modify_skillpoints");
+                playSound("neutral5.mp3");
+              }
             }}
           >
             <Image
@@ -1286,6 +1352,7 @@ export default function NamePage() {
                   className="skill"
                   onClick={() => {
                     setOpenedModal("modify_skill");
+                    playSound("neutral5.mp3");
                     setModalInfos({
                       type: "skill",
                       name: skill.name,
@@ -1307,6 +1374,7 @@ export default function NamePage() {
             className="skill_button"
             onClick={() => {
               setOpenedModal("create_skill");
+              playSound("neutral5.mp3");
               setModalInfos({
                 type: "skill",
                 name: "",
@@ -1330,7 +1398,10 @@ export default function NamePage() {
                 <p className="modal_title">Experience</p>
                 <button
                   className="modal_button_close"
-                  onClick={() => setOpenedModal("")}
+                  onClick={() => {
+                    setOpenedModal("");
+                    playSound("neutral2.mp3");
+                  }}
                 >
                   &#10006;
                 </button>
@@ -1426,7 +1497,7 @@ export default function NamePage() {
                     // Reset temporary values
                     setTempLevel("");
                     setTempExperience("");
-
+                    playSound("neutral1.mp3");
                     setOpenedModal("");
                     handlePatch();
                   }}
@@ -1449,7 +1520,10 @@ export default function NamePage() {
                 <p className="modal_title">Modifier</p>
                 <button
                   className="modal_button_close"
-                  onClick={() => setOpenedModal("")}
+                  onClick={() => {
+                    setOpenedModal("");
+                    playSound("neutral2.mp3");
+                  }}
                 >
                   &#10006;
                 </button>
@@ -1609,6 +1683,7 @@ export default function NamePage() {
                     setTempLife("");
                     setTempResurrections("");
                     setTempRiels("");
+                    playSound("neutral1.mp3");
 
                     setOpenedModal("");
                     handlePatch();
@@ -1632,7 +1707,10 @@ export default function NamePage() {
                 <p className="modal_title">Tutoriel</p>
                 <button
                   className="modal_button_close"
-                  onClick={() => setOpenedModal("")}
+                  onClick={() => {
+                    setOpenedModal("");
+                    playSound("neutral2.mp3");
+                  }}
                 >
                   &#10006;
                 </button>
@@ -1689,7 +1767,10 @@ export default function NamePage() {
                 <p className="modal_title">Description</p>
                 <button
                   className="modal_button_close"
-                  onClick={() => setOpenedModal("")}
+                  onClick={() => {
+                    setOpenedModal("");
+                    playSound("neutral2.mp3");
+                  }}
                 >
                   &#10006;
                 </button>
@@ -1712,6 +1793,8 @@ export default function NamePage() {
                       ...prev,
                       description: newDescription,
                     }));
+                    playSound("neutral1.mp3");
+
                     setOpenedModal(""); // Close modal after saving
                     handlePatch();
                   }}
@@ -1736,7 +1819,10 @@ export default function NamePage() {
                 <p className="modal_title">Modifier aptitude</p>
                 <button
                   className="modal_button_close"
-                  onClick={() => setOpenedModal("")}
+                  onClick={() => {
+                    setOpenedModal("");
+                    playSound("neutral2.mp3");
+                  }}
                 >
                   &#10006;
                 </button>
@@ -1757,6 +1843,7 @@ export default function NamePage() {
                 <button
                   className="modal_button delete margintop"
                   onClick={() => {
+                    playSound("negative1.mp3");
                     handleDeleteClick();
                     handlePatch();
                   }}
@@ -1766,6 +1853,8 @@ export default function NamePage() {
                 <button
                   className="modal_button confirm"
                   onClick={() => {
+                    playSound("neutral1.mp3");
+
                     handleSave();
                     handlePatch();
                   }}
@@ -1789,7 +1878,10 @@ export default function NamePage() {
                   <p className="modal_title">Nouvelle aptitude</p>
                   <button
                     className="modal_button_close"
-                    onClick={() => setOpenedModal("")}
+                    onClick={() => {
+                      setOpenedModal("");
+                      playSound("neutral2.mp3");
+                    }}
                   >
                     &#10006;
                   </button>
@@ -1808,6 +1900,8 @@ export default function NamePage() {
                   <button
                     className="modal_button confirm margintop"
                     onClick={() => {
+                      playSound("neutral1.mp3");
+
                       handleCreate();
                       handlePatch();
                     }}
@@ -1833,7 +1927,10 @@ export default function NamePage() {
                 <p className="modal_title">Modifier objet</p>
                 <button
                   className="modal_button_close"
-                  onClick={() => setOpenedModal("")}
+                  onClick={() => {
+                    setOpenedModal("");
+                    playSound("neutral2.mp3");
+                  }}
                 >
                   &#10006;
                 </button>
@@ -1899,6 +1996,8 @@ export default function NamePage() {
                 <button
                   className="modal_button delete margintop"
                   onClick={() => {
+                    playSound("negative1.mp3");
+
                     handleDeleteClick();
                     handlePatch();
                   }}
@@ -1908,6 +2007,8 @@ export default function NamePage() {
                 <button
                   className="modal_button confirm"
                   onClick={() => {
+                    playSound("neutral1.mp3");
+
                     handleSave();
                     handlePatch();
                   }}
@@ -1930,7 +2031,10 @@ export default function NamePage() {
                 <p className="modal_title">Nouvel objet</p>
                 <button
                   className="modal_button_close"
-                  onClick={() => setOpenedModal("")}
+                  onClick={() => {
+                    setOpenedModal("");
+                    playSound("neutral2.mp3");
+                  }}
                 >
                   &#10006;
                 </button>
@@ -1983,6 +2087,8 @@ export default function NamePage() {
                 <button
                   className="modal_button confirm margintop"
                   onClick={() => {
+                    playSound("neutral1.mp3");
+
                     handleCreate();
                     handlePatch();
                   }}
@@ -2007,7 +2113,10 @@ export default function NamePage() {
                 <p className="modal_title">{modalInfos.name} de base</p>
                 <button
                   className="modal_button_close"
-                  onClick={() => setOpenedModal("")}
+                  onClick={() => {
+                    setOpenedModal("");
+                    playSound("neutral2.mp3");
+                  }}
                 >
                   &#10006;
                 </button>
@@ -2022,6 +2131,8 @@ export default function NamePage() {
                 <button
                   className="modal_button confirm margintop"
                   onClick={() => {
+                    playSound("neutral1.mp3");
+
                     handleSave();
                     updateCharacterStats(character);
                     handlePatch();
@@ -2045,7 +2156,10 @@ export default function NamePage() {
                 <p className="modal_title">Points de compétence</p>
                 <button
                   className="modal_button_close"
-                  onClick={() => setOpenedModal("")}
+                  onClick={() => {
+                    setOpenedModal("");
+                    playSound("neutral2.mp3");
+                  }}
                 >
                   &#10006;
                 </button>
@@ -2086,6 +2200,7 @@ export default function NamePage() {
                       setTempSkillpoints(newSkillpoints);
                       return { ...prevCharacter, skillpoints: newSkillpoints };
                     });
+                    playSound("neutral1.mp3");
 
                     setOpenedModal("");
                     handlePatch();
@@ -2111,7 +2226,10 @@ export default function NamePage() {
                 <p className="modal_title">Modifier compétence</p>
                 <button
                   className="modal_button_close"
-                  onClick={() => setOpenedModal("")}
+                  onClick={() => {
+                    setOpenedModal("");
+                    playSound("neutral2.mp3");
+                  }}
                 >
                   &#10006;
                 </button>
@@ -2139,6 +2257,8 @@ export default function NamePage() {
                 <button
                   className="modal_button delete margintop"
                   onClick={() => {
+                    playSound("negative1.mp3");
+
                     handleDeleteClick();
                     handlePatch();
                   }}
@@ -2148,6 +2268,8 @@ export default function NamePage() {
                 <button
                   className="modal_button confirm"
                   onClick={() => {
+                    playSound("neutral1.mp3");
+
                     handleSave();
                     handlePatch();
                   }}
@@ -2170,7 +2292,10 @@ export default function NamePage() {
                 <p className="modal_title">Nouvelle compétence</p>
                 <button
                   className="modal_button_close"
-                  onClick={() => setOpenedModal("")}
+                  onClick={() => {
+                    setOpenedModal("");
+                    playSound("neutral2.mp3");
+                  }}
                 >
                   &#10006;
                 </button>
@@ -2191,6 +2316,8 @@ export default function NamePage() {
                 <button
                   className="modal_button confirm margintop"
                   onClick={() => {
+                    playSound("neutral1.mp3");
+
                     handleCreate();
                     handlePatch();
                   }}
