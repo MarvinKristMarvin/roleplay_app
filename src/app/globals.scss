@@ -553,7 +553,7 @@ body {
 
         .modal_window {
           z-index: 2;
-          width: calc(100% - 2.5rem);
+          width: calc(100% - 1rem);
           background-color: $bgcolor;
           border-radius: 0.25rem;
           border: solid 4px $darkcolor;

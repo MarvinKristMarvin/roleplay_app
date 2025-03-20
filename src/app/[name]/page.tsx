@@ -498,7 +498,7 @@ export default function NamePage() {
     riels: useRef<HTMLInputElement>(null),
   };
   // Handle focus and place cursor at the end
-  const handleFocus = (ref: React.RefObject<HTMLInputElement>) => {
+  const handleFocus = (ref: React.RefObject<HTMLInputElement | null>) => {
     if (ref.current) {
       // Add a small delay to ensure the cursor is set correctly
       setTimeout(() => {
