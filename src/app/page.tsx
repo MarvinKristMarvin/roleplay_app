@@ -1,7 +1,7 @@
 "use client";
 import Image from "next/image";
 import Link from "next/link";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 export default function HomePage() {
   const [characterName, setCharacterName] = useState("");
@@ -10,6 +10,11 @@ export default function HomePage() {
   const getFormattedUrl = (name: string) => {
     return `/${name.replace(/ /g, "_")}`;
   };
+
+  useEffect(() => {
+    // Scroll to bottom of page on initial load
+    window.scrollTo(0, document.body.scrollHeight);
+  }, []);
 
   return (
     <main className="HomePage">

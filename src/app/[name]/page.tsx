@@ -1283,7 +1283,6 @@ export default function NamePage() {
                   <input
                     type="text"
                     inputMode="decimal"
-                    pattern="[0-9+-]+"
                     value={character.level}
                     ref={refs.level}
                     onFocus={() => handleFocus(refs.level)}
@@ -1301,8 +1300,8 @@ export default function NamePage() {
                 <div className="input_container">
                   <input
                     type="text"
-                    inputMode="decimal"
-                    pattern="[0-9+-]+"
+                    inputMode="numeric"
+                    pattern="[0-9.,+-]*"
                     value={character.experience}
                     ref={refs.XP}
                     onFocus={() => handleFocus(refs.XP)}
@@ -1351,7 +1350,7 @@ export default function NamePage() {
               <div className="modal_content">
                 <div className="input_container">
                   <input
-                    type="text"
+                    type="tel"
                     value={character.actuallife}
                     ref={refs.life}
                     onFocus={() => handleFocus(refs.life)}
@@ -1376,7 +1375,7 @@ export default function NamePage() {
                 </div>
                 <div className="input_container">
                   <input
-                    type="text"
+                    type="number"
                     value={character.resurrections}
                     ref={refs.resurrections}
                     onFocus={() => handleFocus(refs.resurrections)}

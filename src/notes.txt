@@ -35,3 +35,4 @@ TEST DEP - automatic number keyboard when selecting number fields
 - retirer le clavier automatique lors d'un Select
 - faire une modale tuto en cliquant sur bouton tutoriel en haut de tab description
 OK - limiter à 16 lettres le nom du personnage
+- remove blue selection when clicking on mobile
