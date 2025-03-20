@@ -1650,8 +1650,9 @@ export default function NamePage() {
                   <h2 className="section_title">Objets</h2>
                   <p className="explications">
                     Un objet a une valeur d&apos;encombrement qui spécifie la
-                    place qu&apos;il prend dans l&apos;inventaire. Un objet
-                    équipé n&apos;encombre pas.
+                    place qu&apos;il prend dans l&apos;inventaire.
+                    L&apos;encombrement d&apos;un objet est de 0 tant qu&apos;il
+                    est équipé.
                   </p>
                 </div>
                 <div className="section">
