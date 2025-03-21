@@ -22,7 +22,7 @@ Déployer
 TODO
 B OK - calculus in number fields (to add or remove amount of life, res, riels, xp, level, base stats, skill points, modify skill level)
 B OK - ajouter les sons (open modal, close modal, OK, SUPPRIMER ET CONFIRMATION, change tab)
-B - fix big tab swap delay then life modal delay (others have some delay too sometimes)
+A - fix big tab swap delay then life modal delay (others have some delay too sometimes)
 B OK - seeding des données des personnages
 C OK - clavier numerique pour vie et xp
 C OK - enlever la selection automatique d'un champ OU plutot tout selectionner OU a la fin sur mobile

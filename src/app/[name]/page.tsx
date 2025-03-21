@@ -6,7 +6,7 @@ import Image from "next/image";
 import { useState } from "react";
 import Select, { components } from "react-select";
 import { StylesConfig } from "react-select";
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useCallback } from "react";
 
 const optionsSlots = [
   { value: "0", label: "0" },
@@ -135,145 +135,160 @@ const playSound = (soundFile: string) => {
   audio.play().catch((err) => console.error("Error playing sound:", err));
 };
 
+const updateStatsFromTraits = (character: Character) => {
+  console.log("Updating stats from traits...");
+  const statMap = new Map();
+
+  // Copy existing stats to maintain item-based bonuses
+  character.stats.forEach((stat: Stat) => {
+    statMap.set(stat.name, { ...stat, traits: 0 }); // Reset traits to 0
+  });
+
+  // Regex to match "+1 LUCK", "-2 Charisme", etc.
+  const statRegex = /([-+]?\d+)\s+([A-Za-zÀ-ÿ]+)/g;
+
+  character.traits.forEach((trait: Trait) => {
+    let match;
+    while ((match = statRegex.exec(trait.description)) !== null) {
+      const value = parseInt(match[1], 10);
+      const statName = match[2];
+
+      if (statMap.has(statName)) {
+        statMap.get(statName).traits += value;
+      } else {
+        statMap.set(statName, {
+          name: statName,
+          base: 0,
+          traits: value,
+          items: 0,
+          value: 0,
+        });
+      }
+    }
+  });
+
+  // Convert statMap back to an array
+  return {
+    ...character,
+    stats: Array.from(statMap.values()),
+  };
+};
+
+const updateStatsFromItems = (character: Character) => {
+  console.log("Updating stats from items...");
+  const statMap = new Map();
+
+  // Copy existing stats to maintain trait-based bonuses
+  character.stats.forEach((stat: Stat) => {
+    statMap.set(stat.name, { ...stat, items: 0 }); // Reset items to 0
+  });
+
+  // Regex to match "+1 LUCK", "-2 Charisme", etc.
+  const statRegex = /([-+]?\d+)\s+([A-Za-zÀ-ÿ]+)/g;
+
+  character.items.forEach((item: Item) => {
+    // Ignore items in the "Inventaire" category
+    if (item.category === "Inventaire") return;
+
+    let match;
+    while ((match = statRegex.exec(item.description)) !== null) {
+      const value = parseInt(match[1], 10);
+      const statName = match[2];
+
+      if (statMap.has(statName)) {
+        statMap.get(statName).items += value;
+      } else {
+        statMap.set(statName, {
+          name: statName,
+          base: 0,
+          traits: 0,
+          items: value,
+          value: 0,
+        });
+      }
+    }
+  });
+
+  // Convert statMap back to an array
+  return {
+    ...character,
+    stats: Array.from(statMap.values()),
+  };
+};
+
+const parseSkillDescriptions = (character: Character) => {
+  console.log("Parsing skill descriptions with real stats...");
+  // Create a Map of stat values for easy lookup - with lowercase keys
+  const statsMap = new Map<string, number>();
+  character.stats.forEach((stat) => {
+    statsMap.set(stat.name.toLowerCase(), stat.base + stat.traits + stat.items);
+  });
+
+  // Function to evaluate formulas
+  const evaluateFormula = (formula: string): string => {
+    return formula.replace(
+      /(\d*\.?\d*)\s*([A-Za-zÀ-ÿ]+)/g,
+      (match, multiplier, statName) => {
+        const lowerStatName = statName.toLowerCase();
+        if (statsMap.has(lowerStatName)) {
+          const statValue = statsMap.get(lowerStatName) || 0;
+          return multiplier
+            ? (parseFloat(multiplier) * statValue).toString()
+            : statValue.toString();
+        }
+        return "???";
+      }
+    );
+  };
+
+  // Process each skill description
+  return {
+    ...character,
+    skills: character.skills.map((skill) => ({
+      ...skill,
+      description: skill.description.replace(
+        /\(([^)]+)\)(?:\s*=\s*-?\d+|\s*=\s*(?:ERROR|\?\?\?))?/g, // Updated to match both ERROR and ???
+        (match, formula) => {
+          const evaluatedFormula = evaluateFormula(formula);
+          try {
+            const result = Math.round(eval(evaluatedFormula));
+            return isNaN(result)
+              ? `(${formula}) = ???`
+              : `(${formula}) = ${result}`;
+          } catch {
+            return `(${formula}) = ???`;
+          }
+        }
+      ),
+    })),
+  };
+};
+
+const updateCharacterStats = (character: Character) => {
+  return {
+    ...character,
+    stats: character.stats
+      .map((stat: Stat) => ({
+        ...stat,
+        value: stat.base + stat.traits + stat.items,
+      }))
+      .filter((stat) => stat.value !== 0), // Remove stats where value is 0
+  };
+};
+
+// Handle focus and place cursor at the end
+const handleFocus = (ref: React.RefObject<HTMLInputElement | null>) => {
+  if (ref.current) {
+    // Add a small delay to ensure the cursor is set correctly
+    setTimeout(() => {
+      const length = ref.current!.value.length;
+      ref.current!.setSelectionRange(length, length);
+    }, 0); // 0ms delay ensures it runs after the focus event
+  }
+};
+
 export default function NamePage() {
   const { name } = useParams();
-
-  const updateStatsFromTraits = (character: Character) => {
-    console.log("Updating stats from traits...");
-    const statMap = new Map();
-
-    // Copy existing stats to maintain item-based bonuses
-    character.stats.forEach((stat: Stat) => {
-      statMap.set(stat.name, { ...stat, traits: 0 }); // Reset traits to 0
-    });
-
-    // Regex to match "+1 LUCK", "-2 Charisme", etc.
-    const statRegex = /([-+]?\d+)\s+([A-Za-zÀ-ÿ]+)/g;
-
-    character.traits.forEach((trait: Trait) => {
-      let match;
-      while ((match = statRegex.exec(trait.description)) !== null) {
-        const value = parseInt(match[1], 10);
-        const statName = match[2];
-
-        if (statMap.has(statName)) {
-          statMap.get(statName).traits += value;
-        } else {
-          statMap.set(statName, {
-            name: statName,
-            base: 0,
-            traits: value,
-            items: 0,
-            value: 0,
-          });
-        }
-      }
-    });
-
-    // Convert statMap back to an array
-    return {
-      ...character,
-      stats: Array.from(statMap.values()),
-    };
-  };
-
-  const updateStatsFromItems = (character: Character) => {
-    console.log("Updating stats from items...");
-    const statMap = new Map();
-
-    // Copy existing stats to maintain trait-based bonuses
-    character.stats.forEach((stat: Stat) => {
-      statMap.set(stat.name, { ...stat, items: 0 }); // Reset items to 0
-    });
-
-    // Regex to match "+1 LUCK", "-2 Charisme", etc.
-    const statRegex = /([-+]?\d+)\s+([A-Za-zÀ-ÿ]+)/g;
-
-    character.items.forEach((item: Item) => {
-      // Ignore items in the "Inventaire" category
-      if (item.category === "Inventaire") return;
-
-      let match;
-      while ((match = statRegex.exec(item.description)) !== null) {
-        const value = parseInt(match[1], 10);
-        const statName = match[2];
-
-        if (statMap.has(statName)) {
-          statMap.get(statName).items += value;
-        } else {
-          statMap.set(statName, {
-            name: statName,
-            base: 0,
-            traits: 0,
-            items: value,
-            value: 0,
-          });
-        }
-      }
-    });
-
-    // Convert statMap back to an array
-    return {
-      ...character,
-      stats: Array.from(statMap.values()),
-    };
-  };
-
-  const parseSkillDescriptions = (character: Character) => {
-    console.log("Parsing skill descriptions with real stats...");
-    // Create a Map of stat values for easy lookup - with lowercase keys
-    const statsMap = new Map<string, number>();
-    character.stats.forEach((stat) => {
-      statsMap.set(
-        stat.name.toLowerCase(),
-        stat.base + stat.traits + stat.items
-      );
-    });
-
-    // Function to evaluate formulas
-    const evaluateFormula = (formula: string): string => {
-      return formula.replace(
-        /(\d*\.?\d*)\s*([A-Za-zÀ-ÿ]+)/g,
-        (match, multiplier, statName) => {
-          const lowerStatName = statName.toLowerCase();
-          if (statsMap.has(lowerStatName)) {
-            const statValue = statsMap.get(lowerStatName) || 0;
-            return multiplier
-              ? (parseFloat(multiplier) * statValue).toString()
-              : statValue.toString();
-          }
-          return "???";
-        }
-      );
-    };
-
-    // Process each skill description
-    return {
-      ...character,
-      skills: character.skills.map((skill) => ({
-        ...skill,
-        description: skill.description.replace(
-          /\(([^)]+)\)(?:\s*=\s*-?\d+|\s*=\s*(?:ERROR|\?\?\?))?/g, // Updated to match both ERROR and ???
-          (match, formula) => {
-            const evaluatedFormula = evaluateFormula(formula);
-            try {
-              const result = Math.round(eval(evaluatedFormula));
-              return isNaN(result)
-                ? `(${formula}) = ???`
-                : `(${formula}) = ${result}`;
-            } catch {
-              return `(${formula}) = ???`;
-            }
-          }
-        ),
-      })),
-    };
-  };
-
-  // Usage: Call this function whenever traits change
-  /*const setCharacterStatsStatTraitsUpdate = (newCharacter: Character) => {
-    setCharacter(updateStatsFromTraits(newCharacter));
-  };*/
 
   const [character, setCharacter] = useState({
     _id: "initial",
@@ -448,18 +463,6 @@ export default function NamePage() {
     //...character.stats.map((stat) => stat.base),
   ]);
 
-  const updateCharacterStats = (character: Character) => {
-    return {
-      ...character,
-      stats: character.stats
-        .map((stat: Stat) => ({
-          ...stat,
-          value: stat.base + stat.traits + stat.items,
-        }))
-        .filter((stat) => stat.value !== 0), // Remove stats where value is 0
-    };
-  };
-
   // Reset deleteStep when openedModal changes
   useEffect(() => {
     setDeleteStep(0);
@@ -515,18 +518,8 @@ export default function NamePage() {
     resurrections: useRef<HTMLInputElement>(null),
     riels: useRef<HTMLInputElement>(null),
   };
-  // Handle focus and place cursor at the end
-  const handleFocus = (ref: React.RefObject<HTMLInputElement | null>) => {
-    if (ref.current) {
-      // Add a small delay to ensure the cursor is set correctly
-      setTimeout(() => {
-        const length = ref.current!.value.length;
-        ref.current!.setSelectionRange(length, length);
-      }, 0); // 0ms delay ensures it runs after the focus event
-    }
-  };
 
-  const handleSave = () => {
+  const handleSave = useCallback(() => {
     console.log("Saving character");
     if (!modalInfos) return; // Prevent errors if modalInfos is null
 
@@ -677,7 +670,7 @@ export default function NamePage() {
 
     // Close modal immediately for better user experience
     setOpenedModal("");
-  };
+  }, [modalInfos]);
 
   const handleCreate = () => {
     if (!modalInfos) return;
