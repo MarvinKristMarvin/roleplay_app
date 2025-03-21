@@ -670,9 +670,9 @@ export default function NamePage() {
 
     // Close modal immediately for better user experience
     setOpenedModal("");
-  }, [modalInfos]);
+  }, [modalInfos, selectedSlot, selectedType?.value]);
 
-  const handleCreate = () => {
+  const handleCreate = useCallback(() => {
     if (!modalInfos) return;
     console.log("Creating:", modalInfos);
 
@@ -810,11 +810,10 @@ export default function NamePage() {
     });
 
     setOpenedModal(""); // Close modal
-  };
+  }, [modalInfos, selectedSlot, selectedType, setCharacter, setOpenedModal]); // ✅ Dependencies
 
-  const handleDelete = () => {
+  const handleDelete = useCallback(() => {
     if (!modalInfos) return;
-
     setCharacter((prev) => {
       switch (modalInfos.type) {
         case "trait":
@@ -824,13 +823,11 @@ export default function NamePage() {
               (trait) => trait.name !== modalInfos.name
             ),
           };
-
         case "item":
           return {
             ...prev,
             items: prev.items.filter((item) => item.name !== modalInfos.name),
           };
-
         case "skill":
           return {
             ...prev,
@@ -838,32 +835,28 @@ export default function NamePage() {
               (skill) => skill.name !== modalInfos.name
             ),
           };
-
         case "stat":
           return {
             ...prev,
             stats: prev.stats.filter((stat) => stat.name !== modalInfos.name),
           };
-
         default:
           return prev;
       }
     });
-
     setOpenedModal(""); // Close modal
-  };
+  }, [modalInfos, setCharacter, setOpenedModal]);
 
-  const handleDeleteClick = () => {
+  const handleDeleteClick = useCallback(() => {
     if (deleteStep < 1) {
       setDeleteStep((prev) => prev + 1);
     } else {
       handleDelete(); // Call the actual delete function on the second click
     }
-  };
+  }, [deleteStep, setDeleteStep, handleDelete]);
 
-  const handlePatch = async () => {
+  const handlePatch = useCallback(async () => {
     try {
-      // Ensure latest state update before sending the request
       setCharacter((prevCharacter) => {
         const updatedCharacter = { ...prevCharacter };
 
@@ -873,23 +866,23 @@ export default function NamePage() {
             "Content-Type": "application/json",
           },
           body: JSON.stringify({
-            id: updatedCharacter._id, // Make sure `_id` exists
+            id: updatedCharacter._id,
             ...updatedCharacter,
           }),
         })
           .then((response) => response.json())
           .then((data) => {
             console.log("Character updated:", data);
-            setCharacter(data); // Ensure UI reflects new data
+            setCharacter(data); // Update UI after receiving a response
           })
           .catch((error) => console.error("Error updating character:", error));
 
-        return updatedCharacter;
+        return updatedCharacter; // Ensure state updates efficiently
       });
     } catch (error) {
       console.error("Error updating character:", error);
     }
-  };
+  }, []);
 
   return (
     <main className="NamePage">
