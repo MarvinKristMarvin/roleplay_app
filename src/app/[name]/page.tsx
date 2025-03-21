@@ -8,6 +8,14 @@ import Select, { components } from "react-select";
 import { StylesConfig } from "react-select";
 import { useEffect, useRef, useCallback } from "react";
 
+const safeEval = (expression: string) => {
+  try {
+    return new Function(`return (${expression})`)();
+  } catch {
+    return NaN;
+  }
+};
+
 const optionsSlots = [
   { value: "0", label: "0" },
   { value: "1", label: "1" },
@@ -251,7 +259,7 @@ const parseSkillDescriptions = (character: Character) => {
         (match, formula) => {
           const evaluatedFormula = evaluateFormula(formula);
           try {
-            const result = Math.round(eval(evaluatedFormula));
+            const result = Math.round(safeEval(evaluatedFormula));
             return isNaN(result)
               ? `(${formula}) = ???`
               : `(${formula}) = ${result}`;
@@ -597,7 +605,7 @@ export default function NamePage() {
           } else if (/^[\d+\-*/\s]+$/.test(levelInput)) {
             // If it's a mathematical expression (e.g., "5+5"), evaluate it
             try {
-              const evaluated = eval(levelInput);
+              const evaluated = safeEval(levelInput);
               updatedLevel = !isNaN(evaluated) ? evaluated : modalInfos.level;
             } catch {
               updatedLevel = modalInfos.level;
@@ -638,7 +646,7 @@ export default function NamePage() {
           } else if (/^[\d+\-*/\s]+$/.test(baseInput)) {
             // If input is a valid arithmetic expression (e.g., "5+5")
             try {
-              const evaluated = eval(baseInput);
+              const evaluated = safeEval(baseInput);
               updatedBase = !isNaN(evaluated) ? evaluated : modalInfos.base;
             } catch {
               updatedBase = modalInfos.base;
@@ -1439,7 +1447,7 @@ export default function NamePage() {
                         } else if (/^[\d+\-*/\s]+$/.test(input)) {
                           // If it's a mathematical expression, evaluate it
                           try {
-                            const evaluated = eval(input);
+                            const evaluated = safeEval(input);
                             newCharacter.level = !isNaN(evaluated)
                               ? evaluated
                               : character.level;
@@ -1464,7 +1472,7 @@ export default function NamePage() {
                         } else if (/^[\d+\-*/\s]+$/.test(input)) {
                           // If it's a mathematical expression, evaluate it
                           try {
-                            const evaluated = eval(input);
+                            const evaluated = safeEval(input);
                             newCharacter.experience = !isNaN(evaluated)
                               ? evaluated
                               : character.experience;
@@ -1598,7 +1606,7 @@ export default function NamePage() {
                         } else if (/^[\d+\-*/\s]+$/.test(input)) {
                           // If it's a mathematical expression, evaluate it
                           try {
-                            const evaluated = eval(input);
+                            const evaluated = safeEval(input);
                             newCharacter.actuallife = !isNaN(evaluated)
                               ? evaluated
                               : character.actuallife;
@@ -1624,7 +1632,7 @@ export default function NamePage() {
                         } else if (/^[\d+\-*/\s]+$/.test(input)) {
                           // If it's a mathematical expression, evaluate it
                           try {
-                            const evaluated = eval(input);
+                            const evaluated = safeEval(input);
                             newCharacter.resurrections = !isNaN(evaluated)
                               ? evaluated
                               : character.resurrections;
@@ -1649,7 +1657,7 @@ export default function NamePage() {
                         } else if (/^[\d+\-*/\s]+$/.test(input)) {
                           // If it's a mathematical expression, evaluate it
                           try {
-                            const evaluated = eval(input);
+                            const evaluated = safeEval(input);
                             newCharacter.riels = !isNaN(evaluated)
                               ? evaluated
                               : character.riels;
@@ -2174,7 +2182,7 @@ export default function NamePage() {
                       } else if (/^[\d+\-*/\s]+$/.test(input)) {
                         // If it's a mathematical expression (e.g., "5+5"), evaluate it
                         try {
-                          const evaluated = eval(input);
+                          const evaluated = safeEval(input);
                           newSkillpoints = !isNaN(evaluated) ? evaluated : 0;
                         } catch {
                           newSkillpoints = 0;
