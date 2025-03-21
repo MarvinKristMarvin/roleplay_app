@@ -122,9 +122,9 @@ const playSound = (soundFile: string) => {
   audio.currentTime = 0; // Restart if already playing
   // Adjust volume based on sound type
   if (soundFile.includes("negative1")) {
-    audio.volume = 0.22; // delete
+    audio.volume = 0.25; // delete
   } else if (soundFile.includes("neutral1")) {
-    audio.volume = 0.3; // ok
+    audio.volume = 0.25; // ok
   } else if (soundFile.includes("neutral2")) {
     audio.volume = 0.85; // close modal
   } else if (soundFile.includes("neutral5")) {

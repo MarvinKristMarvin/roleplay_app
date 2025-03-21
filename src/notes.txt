@@ -21,14 +21,15 @@ Déployer
 
 TODO
 B OK - calculus in number fields (to add or remove amount of life, res, riels, xp, level, base stats, skill points, modify skill level)
-B - ajouter les sons (open modal, close modal, OK, SUPPRIMER ET CONFIRMATION, change tab)
+B OK - ajouter les sons (open modal, close modal, OK, SUPPRIMER ET CONFIRMATION, change tab)
 B - fix big tab swap delay then life modal delay (others have some delay too sometimes)
-B - seeding des données des personnages
+B OK - seeding des données des personnages
 C OK - clavier numerique pour vie et xp
 C OK - enlever la selection automatique d'un champ OU plutot tout selectionner OU a la fin sur mobile
 A OK - le 0 automatique déconne, permettre de mettre rien du tout et gérer le null apres
 B OK - retirer le clavier automatique lors d'un Select
 B OK - faire une modale tuto en cliquant sur bouton tutoriel en haut de tab description
 D OK - remove blue selection when clicking on mobile
-D VOIR DURANT TESTS - s'assurer que la selection de category est bien égale à la catégorie de l'objet modifié, et inventaire lors de la création
+D VOIR DURANT TESTS - s'assurer que la selection de category est bien égale à la catégorie de l'objet modifié, et inventaire lors de la création, j'ai l'impression que ca se remet en inventaire parfois en modifiant objet equipé, la en créant un accessoir et apres modifiant un buste : le buste est devenu un accessoire dans le Select 
 D OK - réduire padding autour de l'app pour application plus claire
+B - probleme : les formules donnent ??? quand une stat n'existe plus au lieu de mettre la stat concernée à 0 => et marquer = 20? degats
