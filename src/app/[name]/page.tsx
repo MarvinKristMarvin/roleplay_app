@@ -7,6 +7,7 @@ import { useState } from "react";
 import Select, { components } from "react-select";
 import { StylesConfig } from "react-select";
 import { useEffect, useRef, useCallback } from "react";
+import { request } from "http";
 
 const safeEval = (expression: string) => {
   try {
@@ -993,8 +994,10 @@ export default function NamePage() {
           <div
             className="description"
             onClick={() => {
-              setTab("description");
-              playSound("neutral7.mp3");
+              requestAnimationFrame(() => {
+                setTab("description");
+                playSound("neutral7.mp3");
+              });
             }}
           >
             <Image
