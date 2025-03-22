@@ -4,7 +4,7 @@ import React from "react";
 import { useParams } from "next/navigation";
 import Image from "next/image";
 import { useState } from "react";
-// import Select, { components } from "react-select";
+import Select, { components } from "react-select";
 import { StylesConfig } from "react-select";
 import { useEffect, useRef, useCallback } from "react";
 
@@ -16,7 +16,7 @@ const safeEval = (expression: string) => {
   }
 };
 
-/*const optionsSlots = [
+const optionsSlots = [
   { value: "0", label: "0" },
   { value: "1", label: "1" },
   { value: "2", label: "2" },
@@ -27,7 +27,7 @@ const safeEval = (expression: string) => {
   { value: "7", label: "7" },
   { value: "8", label: "8" },
   { value: "9", label: "9" },
-];*/
+];
 
 const optionsType = [
   { value: "Inventaire", label: "Inventaire" },
@@ -81,7 +81,6 @@ const customStyles: StylesConfig<{ value: string; label: string }, false> = {
     borderBottom: "1px solid rgb(233, 187, 156)",
   }),
 };
-console.log(customStyles);
 
 type Trait = {
   name: string;
@@ -516,10 +515,6 @@ export default function NamePage() {
   const [selectedType, setSelectedType] = useState<OptionType | null>(
     optionsType[0]
   );
-  console.log(selectedType);
-  console.log(selectedSlot);
-  console.log(setSelectedSlot);
-  console.log(setSelectedType);
 
   // Handles skillpoints input value
   const [tempSkillpoints, setTempSkillpoints] = useState<string | number>(
@@ -530,11 +525,6 @@ export default function NamePage() {
   const [tempRiels, setTempRiels] = useState("");
   const [tempLevel, setTempLevel] = useState("");
   const [tempExperience, setTempExperience] = useState("");
-  console.log(tempSkillpoints);
-  console.log(setTempSkillpoints);
-  console.log(tempLife, setTempLife);
-  console.log(tempResurrections, setTempResurrections);
-  console.log(tempRiels, setTempRiels);
 
   // Handles input focus, cursor at the end
   const refs = {
@@ -697,7 +687,6 @@ export default function NamePage() {
     // Close modal immediately for better user experience
     setOpenedModal("");
   }, [modalInfos, selectedSlot, selectedType?.value]);
-  console.log(handleSave);
 
   const handleCreate = useCallback(() => {
     if (!modalInfos) return;
@@ -838,7 +827,6 @@ export default function NamePage() {
 
     setOpenedModal(""); // Close modal
   }, [modalInfos, selectedSlot, selectedType, setCharacter, setOpenedModal]); // ✅ Dependencies
-  console.log(handleCreate);
 
   const handleDelete = useCallback(() => {
     if (!modalInfos) return;
@@ -882,7 +870,6 @@ export default function NamePage() {
       handleDelete(); // Call the actual delete function on the second click
     }
   }, [deleteStep, setDeleteStep, handleDelete]);
-  console.log(handleDeleteClick);
 
   const handlePatch = useCallback(async () => {
     try {
@@ -1516,6 +1503,826 @@ export default function NamePage() {
                     setTempExperience("");
                     playSound("neutral1.mp3");
                     setOpenedModal("");
+                    handlePatch();
+                  }}
+                >
+                  OK
+                </button>
+              </div>
+            </div>
+          </div>
+        </>
+      ) : (
+        ""
+      )}
+      {/* MODAL MODIFY INFOS*/}
+      {isClient && openedModal === "modify_infos" ? (
+        <>
+          <div className="modal">
+            <div className="modal_window">
+              <div className="modal_header">
+                <p className="modal_title">Modifier</p>
+                <button
+                  className="modal_button_close"
+                  onClick={() => {
+                    setOpenedModal("");
+                    playSound("neutral2.mp3");
+                  }}
+                >
+                  &#10006;
+                </button>
+              </div>
+              <div className="modal_content">
+                <div className="input_container">
+                  <input
+                    type="text"
+                    inputMode="numeric"
+                    defaultValue={String(character.actuallife)}
+                    ref={refs.life}
+                    onFocus={() => {
+                      handleFocus(refs.life);
+                      setTempLife("");
+                    }}
+                    onChange={(e) => setTempLife(e.target.value)}
+                  />
+                  <span>
+                    <Image
+                      src="/heart5-Photoroom.png"
+                      alt="heart"
+                      width={22}
+                      height={22}
+                    ></Image>
+                  </span>
+                </div>
+                <div className="input_container">
+                  <input
+                    type="text"
+                    inputMode="numeric"
+                    defaultValue={String(character.resurrections)}
+                    ref={refs.resurrections}
+                    onFocus={() => {
+                      handleFocus(refs.resurrections);
+                      setTempResurrections("");
+                    }}
+                    onChange={(e) => setTempResurrections(e.target.value)}
+                  />
+                  <span>
+                    {" "}
+                    <Image
+                      src="/star5-Photoroom.png"
+                      alt="star"
+                      width={22}
+                      height={22}
+                    ></Image>
+                  </span>
+                </div>
+                <div className="input_container">
+                  <input
+                    type="text"
+                    inputMode="numeric"
+                    defaultValue={String(character.riels)}
+                    ref={refs.riels}
+                    onFocus={() => {
+                      handleFocus(refs.riels);
+                      setTempRiels("");
+                    }}
+                    onChange={(e) => setTempRiels(e.target.value)}
+                  />
+                  <span>
+                    {" "}
+                    <Image
+                      src="/coin5-Photoroom.png"
+                      alt="coin"
+                      width={22}
+                      height={22}
+                    ></Image>
+                  </span>
+                </div>
+                <button
+                  className="modal_button confirm"
+                  onClick={() => {
+                    // Process temporary values and update character
+                    setCharacter((prevCharacter) => {
+                      const newCharacter = { ...prevCharacter };
+
+                      // Process life
+                      if (tempLife) {
+                        const currentLife = prevCharacter.actuallife || 0;
+                        const input = String(tempLife).trim();
+
+                        if (/^[+\-]\d+$/.test(input)) {
+                          // If input is "+X" or "-X", add/subtract from current value
+                          newCharacter.actuallife = currentLife + Number(input);
+                        } else if (/^[\d+\-*/\s]+$/.test(input)) {
+                          // If it's a mathematical expression, evaluate it
+                          try {
+                            const evaluated = safeEval(input);
+                            newCharacter.actuallife = !isNaN(evaluated)
+                              ? evaluated
+                              : character.actuallife;
+                          } catch {
+                            newCharacter.actuallife = character.actuallife;
+                          }
+                        } else {
+                          // Invalid input sets value to 0
+                          newCharacter.actuallife = character.actuallife;
+                        }
+                      }
+
+                      // Process resurrections
+                      if (tempResurrections) {
+                        const currentResurrections =
+                          prevCharacter.resurrections || 0;
+                        const input = String(tempResurrections).trim();
+
+                        if (/^[+\-]\d+$/.test(input)) {
+                          // If input is "+X" or "-X", add/subtract from current value
+                          newCharacter.resurrections =
+                            currentResurrections + Number(input);
+                        } else if (/^[\d+\-*/\s]+$/.test(input)) {
+                          // If it's a mathematical expression, evaluate it
+                          try {
+                            const evaluated = safeEval(input);
+                            newCharacter.resurrections = !isNaN(evaluated)
+                              ? evaluated
+                              : character.resurrections;
+                          } catch {
+                            newCharacter.resurrections =
+                              character.resurrections;
+                          }
+                        } else {
+                          // Invalid input sets value to 0
+                          newCharacter.resurrections = character.resurrections;
+                        }
+                      }
+
+                      // Process riels
+                      if (tempRiels) {
+                        const currentRiels = prevCharacter.riels || 0;
+                        const input = String(tempRiels).trim();
+
+                        if (/^[+\-]\d+$/.test(input)) {
+                          // If input is "+X" or "-X", add/subtract from current value
+                          newCharacter.riels = currentRiels + Number(input);
+                        } else if (/^[\d+\-*/\s]+$/.test(input)) {
+                          // If it's a mathematical expression, evaluate it
+                          try {
+                            const evaluated = safeEval(input);
+                            newCharacter.riels = !isNaN(evaluated)
+                              ? evaluated
+                              : character.riels;
+                          } catch {
+                            newCharacter.riels = character.riels;
+                          }
+                        } else {
+                          // Invalid input sets value to 0
+                          newCharacter.riels = character.riels;
+                        }
+                      }
+
+                      return newCharacter;
+                    });
+
+                    // Reset temporary values
+                    setTempLife("");
+                    setTempResurrections("");
+                    setTempRiels("");
+                    playSound("neutral1.mp3");
+
+                    setOpenedModal("");
+                    handlePatch();
+                  }}
+                >
+                  OK
+                </button>
+              </div>
+            </div>
+          </div>
+        </>
+      ) : (
+        ""
+      )}
+      {/* MODAL TUTORIAL */}
+      {isClient && openedModal === "tutorial" ? (
+        <>
+          <div className="modal">
+            <div className="modal_window">
+              <div className="modal_header">
+                <p className="modal_title">Tutoriel</p>
+                <button
+                  className="modal_button_close"
+                  onClick={() => {
+                    setOpenedModal("");
+                    playSound("neutral2.mp3");
+                  }}
+                >
+                  &#10006;
+                </button>
+              </div>
+              <div className="modal_content">
+                <div className="section">
+                  <h2 className="section_title">Fonctionnement</h2>
+                  <p className="explications">
+                    Appuyez sur un élément pour modifier ses valeurs. Sur un
+                    champ de saisie de nombre, vous pouvez saisir + ou - pour
+                    effectuer une addition ou soustraction.
+                  </p>
+                </div>
+                <div className="section">
+                  <h2 className="section_title">Stats</h2>
+                  <p className="explications">
+                    Les stats peuvent être modifiées en écrivant +1 NomDeMaStat
+                    dans une aptitude ou une description d&apos;objet équipé, ou
+                    alors en modifiant les stats de base dans l&apos;onglet
+                    Stats. La stat SLOT augmente les places d&apos;inventaire.
+                  </p>
+                </div>
+                <div className="section">
+                  <h2 className="section_title">Objets</h2>
+                  <p className="explications">
+                    Un objet a une valeur d&apos;encombrement qui spécifie la
+                    place qu&apos;il prend dans l&apos;inventaire.
+                    L&apos;encombrement d&apos;un objet est de 0 tant qu&apos;il
+                    est équipé.
+                  </p>
+                </div>
+                <div className="section">
+                  <h2 className="section_title">Compétences</h2>
+                  <p className="explications">
+                    Vous pouvez écrire des formules entre parenthèses dans vos
+                    compétences, par exemple &quot;Inflige (1.5 FOR + AGI + 10)
+                    dégâts&quot;. Les valeurs seront calculées automatiquement
+                    avec vos stats
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </>
+      ) : (
+        ""
+      )}
+      {/* MODAL MODIFY DESCRIPTION*/}
+      {isClient && openedModal === "modify_description" ? (
+        <>
+          <div className="modal">
+            <div className="modal_window">
+              <div className="modal_header">
+                <p className="modal_title">Description</p>
+                <button
+                  className="modal_button_close"
+                  onClick={() => {
+                    setOpenedModal("");
+                    playSound("neutral2.mp3");
+                  }}
+                >
+                  &#10006;
+                </button>
+              </div>
+              <div className="modal_content">
+                <textarea
+                  id="description_input"
+                  defaultValue={character.description}
+                  rows={15}
+                />
+                <button
+                  className="modal_button confirm margintop"
+                  onClick={() => {
+                    const newDescription = (
+                      document.getElementById(
+                        "description_input"
+                      ) as HTMLTextAreaElement
+                    )?.value;
+                    setCharacter((prev) => ({
+                      ...prev,
+                      description: newDescription,
+                    }));
+                    playSound("neutral1.mp3");
+
+                    setOpenedModal(""); // Close modal after saving
+                    handlePatch();
+                  }}
+                >
+                  OK
+                </button>
+              </div>
+            </div>
+          </div>
+        </>
+      ) : (
+        ""
+      )}
+      {/* MODAL MODIFY TRAIT*/}
+      {isClient &&
+      openedModal === "modify_trait" &&
+      modalInfos?.type === "trait" ? (
+        <>
+          <div className="modal">
+            <div className="modal_window">
+              <div className="modal_header">
+                <p className="modal_title">Modifier aptitude</p>
+                <button
+                  className="modal_button_close"
+                  onClick={() => {
+                    setOpenedModal("");
+                    playSound("neutral2.mp3");
+                  }}
+                >
+                  &#10006;
+                </button>
+              </div>
+              <div className="modal_content">
+                <input
+                  type="text"
+                  defaultValue={modalInfos.name}
+                  placeholder="Aptitude"
+                  id="trait_name"
+                />
+                <input
+                  type="text"
+                  defaultValue={modalInfos.description}
+                  placeholder="Bonus"
+                  id="trait_description"
+                />
+                <button
+                  className="modal_button delete margintop"
+                  onClick={() => {
+                    playSound("negative1.mp3");
+                    handleDeleteClick();
+                    handlePatch();
+                  }}
+                >
+                  {deleteStep === 0 ? "SUPPRIMER" : "CONFIRMER SUPPRESSION"}
+                </button>
+                <button
+                  className="modal_button confirm"
+                  onClick={() => {
+                    playSound("neutral1.mp3");
+
+                    handleSave();
+                    handlePatch();
+                  }}
+                >
+                  OK
+                </button>
+              </div>
+            </div>
+          </div>
+        </>
+      ) : (
+        ""
+      )}
+      {/* MODAL CREATE TRAIT*/}
+      {isClient && openedModal === "create_trait" ? (
+        <>
+          <>
+            <div className="modal">
+              <div className="modal_window">
+                <div className="modal_header">
+                  <p className="modal_title">Nouvelle aptitude</p>
+                  <button
+                    className="modal_button_close"
+                    onClick={() => {
+                      setOpenedModal("");
+                      playSound("neutral2.mp3");
+                    }}
+                  >
+                    &#10006;
+                  </button>
+                </div>
+                <div className="modal_content">
+                  <input
+                    type="text"
+                    placeholder="Aptitude"
+                    id="new_trait_name"
+                  />
+                  <input
+                    type="text"
+                    placeholder="Bonus"
+                    id="new_trait_description"
+                  />
+                  <button
+                    className="modal_button confirm margintop"
+                    onClick={() => {
+                      playSound("neutral1.mp3");
+
+                      handleCreate();
+                      handlePatch();
+                    }}
+                  >
+                    OK
+                  </button>
+                </div>
+              </div>
+            </div>
+          </>
+        </>
+      ) : (
+        ""
+      )}
+      {/* MODAL MODIFY ITEM */}
+      {isClient &&
+      openedModal === "modify_item" &&
+      modalInfos?.type === "item" ? (
+        <>
+          <div className="modal">
+            <div className="modal_window">
+              <div className="modal_header">
+                <p className="modal_title">Modifier objet</p>
+                <button
+                  className="modal_button_close"
+                  onClick={() => {
+                    setOpenedModal("");
+                    playSound("neutral2.mp3");
+                  }}
+                >
+                  &#10006;
+                </button>
+              </div>
+              <div className="modal_content">
+                <input
+                  type="text"
+                  placeholder="Nom"
+                  defaultValue={modalInfos.name}
+                  id="item_name"
+                />
+                <div>
+                  <Select
+                    options={optionsSlots}
+                    defaultValue={{
+                      value: modalInfos.slots.toString(),
+                      label: modalInfos.slots.toString(),
+                    }}
+                    onChange={(selectedOption) =>
+                      setSelectedSlot(selectedOption)
+                    }
+                    placeholder="Encombrement"
+                    styles={customStyles}
+                    components={{
+                      Input: (props) => (
+                        <components.Input
+                          {...props}
+                          readOnly
+                          inputMode="none"
+                        />
+                      ),
+                    }}
+                  />
+
+                  <Select
+                    options={optionsType}
+                    defaultValue={{
+                      value: modalInfos.category,
+                      label: modalInfos.category,
+                    }}
+                    onChange={(selectedOption) =>
+                      setSelectedType(selectedOption)
+                    }
+                    styles={customStyles}
+                    components={{
+                      Input: (props) => (
+                        <components.Input
+                          {...props}
+                          readOnly
+                          inputMode="none"
+                        />
+                      ),
+                    }}
+                  />
+                </div>
+                <textarea
+                  placeholder="Description"
+                  rows={3}
+                  defaultValue={modalInfos.description}
+                  id="item_description"
+                />
+
+                <button
+                  className="modal_button delete margintop"
+                  onClick={() => {
+                    playSound("negative1.mp3");
+
+                    handleDeleteClick();
+                    handlePatch();
+                  }}
+                >
+                  {deleteStep === 0 ? "SUPPRIMER" : "CONFIRMER SUPPRESSION"}
+                </button>
+                <button
+                  className="modal_button confirm"
+                  onClick={() => {
+                    playSound("neutral1.mp3");
+
+                    handleSave();
+                    handlePatch();
+                  }}
+                >
+                  OK
+                </button>
+              </div>
+            </div>
+          </div>
+        </>
+      ) : (
+        ""
+      )}
+      {/* MODAL CREATE ITEM */}
+      {isClient && openedModal === "create_item" ? (
+        <>
+          <div className="modal">
+            <div className="modal_window">
+              <div className="modal_header">
+                <p className="modal_title">Nouvel objet</p>
+                <button
+                  className="modal_button_close"
+                  onClick={() => {
+                    setOpenedModal("");
+                    playSound("neutral2.mp3");
+                  }}
+                >
+                  &#10006;
+                </button>
+              </div>
+              <div className="modal_content">
+                <input type="text" placeholder="Nom" id="new_item_name" />
+                <div>
+                  <Select
+                    options={optionsSlots}
+                    onChange={(selectedOption) =>
+                      setSelectedSlot(selectedOption)
+                    }
+                    placeholder="Encombrement"
+                    styles={customStyles}
+                    components={{
+                      Input: (props) => (
+                        <components.Input
+                          {...props}
+                          readOnly
+                          inputMode="none"
+                        />
+                      ),
+                    }}
+                  />
+
+                  <Select
+                    options={optionsType}
+                    defaultValue={selectedType}
+                    onChange={(selectedOption) =>
+                      setSelectedType(selectedOption)
+                    }
+                    placeholder="Type"
+                    styles={customStyles}
+                    components={{
+                      Input: (props) => (
+                        <components.Input
+                          {...props}
+                          readOnly
+                          inputMode="none"
+                        />
+                      ),
+                    }}
+                  />
+                </div>
+                <textarea
+                  placeholder="Description"
+                  rows={3}
+                  id="new_item_description"
+                />
+                <button
+                  className="modal_button confirm margintop"
+                  onClick={() => {
+                    playSound("neutral1.mp3");
+
+                    handleCreate();
+                    handlePatch();
+                  }}
+                >
+                  OK
+                </button>
+              </div>
+            </div>
+          </div>
+        </>
+      ) : (
+        ""
+      )}
+      {/* MODAL MODIFY STAT*/}
+      {isClient &&
+      openedModal === "modify_stat" &&
+      modalInfos?.type === "stat" ? (
+        <>
+          <div className="modal">
+            <div className="modal_window">
+              <div className="modal_header">
+                <p className="modal_title">{modalInfos.name} de base</p>
+                <button
+                  className="modal_button_close"
+                  onClick={() => {
+                    setOpenedModal("");
+                    playSound("neutral2.mp3");
+                  }}
+                >
+                  &#10006;
+                </button>
+              </div>
+              <div className="modal_content">
+                <input
+                  type="text"
+                  inputMode="numeric"
+                  defaultValue={modalInfos.base}
+                  id="stat_base"
+                />
+                <button
+                  className="modal_button confirm margintop"
+                  onClick={() => {
+                    playSound("neutral1.mp3");
+
+                    handleSave();
+                    updateCharacterStats(character);
+                    handlePatch();
+                  }}
+                >
+                  OK
+                </button>
+              </div>
+            </div>
+          </div>
+        </>
+      ) : (
+        ""
+      )}
+      {/* MODAL SKILL POINTS*/}
+      {isClient && openedModal === "modify_skillpoints" ? (
+        <>
+          <div className="modal">
+            <div className="modal_window">
+              <div className="modal_header">
+                <p className="modal_title">Points de compétence</p>
+                <button
+                  className="modal_button_close"
+                  onClick={() => {
+                    setOpenedModal("");
+                    playSound("neutral2.mp3");
+                  }}
+                >
+                  &#10006;
+                </button>
+              </div>
+              <div className="modal_content">
+                <input
+                  type="text"
+                  inputMode="numeric"
+                  value={tempSkillpoints}
+                  onChange={(e) => {
+                    setTempSkillpoints(e.target.value);
+                  }}
+                />
+                <button
+                  className="modal_button confirm margintop"
+                  onClick={() => {
+                    setCharacter((prevCharacter) => {
+                      const currentSkillpoints = prevCharacter.skillpoints || 0;
+                      const input = String(tempSkillpoints).trim(); // Ensure string for processing
+
+                      let newSkillpoints;
+
+                      if (/^[+\-]\d+$/.test(input)) {
+                        // If input is just "+X" or "-X", add it to the current value
+                        newSkillpoints = currentSkillpoints + Number(input);
+                      } else if (/^[\d+\-*/\s]+$/.test(input)) {
+                        // If it's a mathematical expression (e.g., "5+5"), evaluate it
+                        try {
+                          const evaluated = safeEval(input);
+                          newSkillpoints = !isNaN(evaluated) ? evaluated : 0;
+                        } catch {
+                          newSkillpoints = 0;
+                        }
+                      } else {
+                        // Invalid input sets skillpoints to 0
+                        newSkillpoints = 0;
+                      }
+                      setTempSkillpoints(newSkillpoints);
+                      return { ...prevCharacter, skillpoints: newSkillpoints };
+                    });
+                    playSound("neutral1.mp3");
+
+                    setOpenedModal("");
+                    handlePatch();
+                  }}
+                >
+                  OK
+                </button>
+              </div>
+            </div>
+          </div>
+        </>
+      ) : (
+        ""
+      )}
+      {/* MODAL MODIFY SKILL */}
+      {isClient &&
+      openedModal === "modify_skill" &&
+      modalInfos?.type === "skill" ? (
+        <>
+          <div className="modal">
+            <div className="modal_window">
+              <div className="modal_header">
+                <p className="modal_title">Modifier compétence</p>
+                <button
+                  className="modal_button_close"
+                  onClick={() => {
+                    setOpenedModal("");
+                    playSound("neutral2.mp3");
+                  }}
+                >
+                  &#10006;
+                </button>
+              </div>
+              <div className="modal_content">
+                <input
+                  type="text"
+                  placeholder="Nom"
+                  defaultValue={modalInfos.name}
+                  id="skill_name"
+                />
+                <input
+                  type="text"
+                  inputMode="numeric"
+                  placeholder="Niveau"
+                  defaultValue={modalInfos.level}
+                  id="skill_level"
+                />
+                <textarea
+                  placeholder="Description"
+                  defaultValue={modalInfos.description}
+                  rows={10}
+                  id="skill_description"
+                />
+                <button
+                  className="modal_button delete margintop"
+                  onClick={() => {
+                    playSound("negative1.mp3");
+
+                    handleDeleteClick();
+                    handlePatch();
+                  }}
+                >
+                  {deleteStep === 0 ? "SUPPRIMER" : "CONFIRMER SUPPRESSION"}
+                </button>
+                <button
+                  className="modal_button confirm"
+                  onClick={() => {
+                    playSound("neutral1.mp3");
+
+                    handleSave();
+                    handlePatch();
+                  }}
+                >
+                  OK
+                </button>
+              </div>
+            </div>
+          </div>
+        </>
+      ) : (
+        ""
+      )}
+      {/* MODAL CREATE SKILL */}
+      {isClient && openedModal === "create_skill" ? (
+        <>
+          <div className="modal">
+            <div className="modal_window">
+              <div className="modal_header">
+                <p className="modal_title">Nouvelle compétence</p>
+                <button
+                  className="modal_button_close"
+                  onClick={() => {
+                    setOpenedModal("");
+                    playSound("neutral2.mp3");
+                  }}
+                >
+                  &#10006;
+                </button>
+              </div>
+              <div className="modal_content">
+                <input type="text" placeholder="Nom" id="new_skill_name" />
+                <input
+                  type="text"
+                  inputMode="numeric"
+                  placeholder="Niveau"
+                  id="new_skill_level"
+                />
+                <textarea
+                  placeholder="Description"
+                  rows={3}
+                  id="new_skill_description"
+                />
+                <button
+                  className="modal_button confirm margintop"
+                  onClick={() => {
+                    playSound("neutral1.mp3");
+
+                    handleCreate();
                     handlePatch();
                   }}
                 >
