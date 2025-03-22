@@ -7,7 +7,6 @@ import { useState } from "react";
 import Select, { components } from "react-select";
 import { StylesConfig } from "react-select";
 import { useEffect, useRef, useCallback } from "react";
-import { request } from "http";
 
 const safeEval = (expression: string) => {
   try {
