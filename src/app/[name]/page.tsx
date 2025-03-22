@@ -152,7 +152,6 @@ const playSound = (soundFile: string) => {
 };
 
 const updateStatsFromTraits = (character: Character) => {
-  console.log("Updating stats from traits...");
   const statMap = new Map();
 
   // Copy existing stats to maintain item-based bonuses
@@ -191,7 +190,6 @@ const updateStatsFromTraits = (character: Character) => {
 };
 
 const updateStatsFromItems = (character: Character) => {
-  console.log("Updating stats from items...");
   const statMap = new Map();
 
   // Copy existing stats to maintain trait-based bonuses
@@ -233,7 +231,6 @@ const updateStatsFromItems = (character: Character) => {
 };
 
 const parseSkillDescriptions = (character: Character) => {
-  console.log("Parsing skill descriptions with real stats...");
   // Create a Map of stat values for easy lookup - with lowercase keys
   const statsMap = new Map<string, number>();
   character.stats.forEach((stat) => {
@@ -416,10 +413,6 @@ export default function NamePage() {
     ],
   });
 
-  useEffect(() => {
-    console.log("Character updated");
-  }, [character]);
-
   // Fetch character data when component mounts or name changes
   useEffect(() => {
     const fetchOrCreateCharacter = async () => {
@@ -444,7 +437,6 @@ export default function NamePage() {
           if (createResponse.ok) {
             // Character created successfully, update state with the response
             const newCharacterData = await createResponse.json();
-            console.log("New character created:", newCharacterData);
             setCharacter(newCharacterData);
           } else {
             throw new Error("Failed to create character");
@@ -536,7 +528,6 @@ export default function NamePage() {
   };
 
   const handleSave = useCallback(() => {
-    console.log("Saving character");
     if (!modalInfos) return; // Prevent errors if modalInfos is null
 
     // Update local state first
@@ -664,8 +655,6 @@ export default function NamePage() {
             updatedBase = modalInfos.base;
           }
 
-          console.log(updatedBase);
-
           updatedCharacter = {
             ...prev,
             stats: prev.stats.map((stat) =>
@@ -690,15 +679,10 @@ export default function NamePage() {
 
   const handleCreate = useCallback(() => {
     if (!modalInfos) return;
-    console.log("Creating:", modalInfos);
 
     setCharacter((prev) => {
-      console.log("Current modalInfos.type:", modalInfos?.type);
-
       switch (modalInfos.type) {
         case "trait": {
-          console.log("trait");
-
           const newName = (
             document.getElementById("new_trait_name") as HTMLInputElement
           )?.value.trim();
@@ -720,8 +704,6 @@ export default function NamePage() {
         }
 
         case "item": {
-          console.log("Creating Item...");
-
           const newName = (
             document.getElementById("new_item_name") as HTMLInputElement
           )?.value.trim();
@@ -731,16 +713,10 @@ export default function NamePage() {
             ) as HTMLTextAreaElement
           )?.value.trim();
 
-          console.log("New Item Name:", newName);
-          console.log("New Item Description:", newDescription);
-
           if (!newName) return prev;
 
           const newSlots = selectedSlot ? parseInt(selectedSlot.value, 10) : 0;
           const newCategory = selectedType?.value || "";
-
-          console.log("New Slots:", newSlots);
-          console.log("New Category:", newCategory);
 
           return {
             ...prev,
@@ -758,8 +734,6 @@ export default function NamePage() {
         }
 
         case "skill": {
-          console.log("skill");
-
           const newName = (
             document.getElementById("new_skill_name") as HTMLInputElement
           )?.value.trim();
@@ -888,7 +862,6 @@ export default function NamePage() {
         })
           .then((response) => response.json())
           .then((data) => {
-            console.log("Character updated:", data);
             setCharacter(data); // Update UI after receiving a response
           })
           .catch((error) => console.error("Error updating character:", error));
