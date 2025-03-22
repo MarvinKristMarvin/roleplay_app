@@ -1035,54 +1035,7 @@ export default function NamePage() {
       {/* DESCRIPTION */}
       {tab === "description" ? (
         <>
-          <button
-            className="tutorial_button"
-            onClick={() => {
-              setOpenedModal("tutorial");
-              playSound("neutral5.mp3");
-            }}
-          >
-            TUTORIEL
-          </button>
-          <div
-            className="description_text"
-            onClick={() => {
-              setOpenedModal("modify_description");
-              playSound("neutral5.mp3");
-            }}
-          >
-            <p style={{ whiteSpace: "pre-wrap" }}>
-              {character.description || "Description du personnage"}
-            </p>
-          </div>
-          <div className="traits">
-            {character.traits.map((trait, index) => (
-              <p
-                key={index}
-                className="trait"
-                onClick={() => {
-                  setOpenedModal("modify_trait");
-                  playSound("neutral5.mp3");
-                  setModalInfos({
-                    type: "trait",
-                    name: trait.name,
-                    description: trait.description,
-                  });
-                }}
-              >
-                &#9671; {trait.name} : {trait.description}
-              </p>
-            ))}
-            <button
-              onClick={() => {
-                setOpenedModal("create_trait");
-                playSound("neutral5.mp3");
-                setModalInfos({ type: "trait", name: "", description: "" });
-              }}
-            >
-              +
-            </button>
-          </div>
+          <div>test</div>
         </>
       ) : (
         ""
