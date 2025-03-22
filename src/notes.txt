@@ -33,3 +33,4 @@ D OK - remove blue selection when clicking on mobile
 D VOIR DURANT TESTS - s'assurer que la selection de category est bien égale à la catégorie de l'objet modifié, et inventaire lors de la création, j'ai l'impression que ca se remet en inventaire parfois en modifiant objet equipé, la en créant un accessoir et apres modifiant un buste : le buste est devenu un accessoire dans le Select 
 D OK - réduire padding autour de l'app pour application plus claire
 B - probleme : les formules donnent ??? quand une stat n'existe plus au lieu de mettre la stat concernée à 0 => et marquer = 20? degats
+D - load toute la page en meme temps
