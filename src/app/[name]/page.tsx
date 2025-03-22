@@ -125,14 +125,22 @@ type Character = {
   skills: Skill[];
 };
 
+const soundCache: Record<string, HTMLAudioElement> = {}; // Store audio instances
 const playSound = (soundFile: string) => {
-  const audio = new Audio(`/sounds/${soundFile}`); // Load sound dynamically
-  audio.currentTime = 0; // Restart if already playing
+  // Reuse existing sound if available
+  if (!soundCache[soundFile]) {
+    soundCache[soundFile] = new Audio(`/sounds/${soundFile}`);
+  }
+
+  const audio = soundCache[soundFile];
+  audio.currentTime = 0; // Restart sound
+  // const audio = new Audio(`/sounds/${soundFile}`); // Load sound dynamically
+  //audio.currentTime = 0; // Restart if already playing
   // Adjust volume based on sound type
   if (soundFile.includes("negative1")) {
     audio.volume = 0.25; // delete
   } else if (soundFile.includes("neutral1")) {
-    audio.volume = 0.25; // ok
+    audio.volume = 0.3; // ok
   } else if (soundFile.includes("neutral2")) {
     audio.volume = 0.85; // close modal
   } else if (soundFile.includes("neutral5")) {
@@ -408,6 +416,10 @@ export default function NamePage() {
     ],
   });
 
+  useEffect(() => {
+    console.log("Character updated");
+  }, [character]);
+
   // Fetch character data when component mounts or name changes
   useEffect(() => {
     const fetchOrCreateCharacter = async () => {
@@ -457,19 +469,15 @@ export default function NamePage() {
 
   // Whenever the character updates (base stats, traits or items), recalculate the stats
   useEffect(() => {
-    setCharacter((prev) => {
-      const updatedCharacter = updateStatsFromTraits(prev); // First update (Traits -> Stats)
-      const updatedCharacter2 = updateStatsFromItems(updatedCharacter); // Second update (Items -> Stats)
-      const finalCharacter = updateCharacterStats(updatedCharacter2); // Calculate final values
-
-      return parseSkillDescriptions(finalCharacter); // Second update (Calculate final values)
-    });
-  }, [
-    character.traits,
-    character.items,
-    openedModal,
-    //...character.stats.map((stat) => stat.base),
-  ]);
+    if (openedModal === "") {
+      setCharacter((prev) => {
+        const updatedCharacter = updateStatsFromTraits(prev); // First update (Traits -> Stats)
+        const updatedCharacter2 = updateStatsFromItems(updatedCharacter); // Second update (Items -> Stats)
+        const finalCharacter = updateCharacterStats(updatedCharacter2); // Calculate final values
+        return parseSkillDescriptions(finalCharacter); // Parse skill descriptions
+      });
+    }
+  }, [character.traits, character.items, openedModal]);
 
   // Reset deleteStep when openedModal changes
   useEffect(() => {
