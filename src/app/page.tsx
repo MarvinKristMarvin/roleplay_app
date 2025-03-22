@@ -18,14 +18,18 @@ export default function HomePage() {
 
   return (
     <main className="HomePage">
-      <Image
-        src="/jdrbackground.jpg"
-        alt="background image"
-        fill
-        priority
-        unoptimized={true}
-        className="background"
-      />
+      <div className="bg_container">
+        {" "}
+        <Image
+          src="/jdrbackground.jpg"
+          alt="background image"
+          fill={true} // Ensure the image covers the entire viewport with priority
+          unoptimized={true}
+          className="background"
+          priority
+        />
+      </div>
+
       <div className="menu">
         <input
           type="text"

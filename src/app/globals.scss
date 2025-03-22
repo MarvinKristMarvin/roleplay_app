@@ -28,6 +28,12 @@ body {
   max-width: 100vw;
   overflow-x: hidden;
   font-family: var(--font-shortStack), sans-serif;
+  height: 100%;
+  margin: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: black;
 }
 
 * {
@@ -38,6 +44,10 @@ body {
 body {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  display: flex;
+  justify-content: center;
+  background-color: black;
+  width: 100%;
 
   .App {
     max-width: 540px;
@@ -46,28 +56,52 @@ body {
       height: 100%;
     }
     background-color: $bgcolor;
+    min-width: 360px;
+    width: 100%;
+
+    display: flex;
+    justify-content: center;
     .HomePage {
-      height: 100vh;
+      position: relative; /* Ensure it's a positioning context for absolute elements */
+      width: 100%;
+      max-width: 540px;
+      height: 100vh; /* Ensure it covers the full viewport */
       display: flex;
       justify-content: center;
       align-items: center;
-      .background {
-        min-height: 100vh;
-        max-width: 540px;
-        object-position: 78% center;
-        object-fit: cover;
-        z-index: 0;
-        filter: brightness(50%);
+      .bg_container {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        z-index: 2;
+        .background {
+          display: block;
+          min-height: 100vh;
+          max-width: 540px;
+          width: 100%;
+          object-position: 78% center;
+          object-fit: cover;
+          z-index: 3;
+          filter: brightness(50%);
+        }
       }
+
       .menu {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%); /* Centers the menu */
         display: flex;
         justify-content: center;
-        flex-direction: row;
+        align-items: center;
+        flex-direction: column;
         width: 100%;
-        z-index: 1;
+        z-index: 2;
         input {
           width: 12rem;
-          margin-right: 0.75rem;
+          margin-bottom: 0.5rem;
           border: none;
           border-radius: 0.25rem;
           background-color: transparent;
@@ -81,7 +115,7 @@ body {
         }
         a {
           button {
-            width: 8rem;
+            width: 12rem;
 
             border: none;
             border-radius: 0.25rem;
@@ -90,7 +124,6 @@ body {
             font-weight: 900;
             border: solid 2px $white;
             color: $white;
-            text-transform: uppercase;
             cursor: pointer;
           }
         }
@@ -103,6 +136,8 @@ body {
       }
       background-color: $bgcolor;
       padding-top: 0.01rem;
+      width: 100vw;
+      max-width: 540px;
       .main_header {
         padding-top: 0.001rem;
         width: 100%;
