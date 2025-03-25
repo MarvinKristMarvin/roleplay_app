@@ -1,6 +1,6 @@
 "use client";
 
-import React from "react";
+import React, { useMemo } from "react";
 import { useParams } from "next/navigation";
 import Image from "next/image";
 import { useState } from "react";
@@ -134,8 +134,6 @@ const playSound = (soundFile: string) => {
 
   const audio = soundCache[soundFile];
   audio.currentTime = 0; // Restart sound
-  // const audio = new Audio(`/sounds/${soundFile}`); // Load sound dynamically
-  //audio.currentTime = 0; // Restart if already playing
   // Adjust volume based on sound type
   if (soundFile.includes("negative1")) {
     audio.volume = 0.25; // delete
@@ -873,6 +871,63 @@ export default function NamePage() {
     }
   }, []);
 
+  const descriptionTab = useMemo(() => {
+    if (tab !== "description") return null;
+
+    return (
+      <>
+        <button
+          className="tutorial_button"
+          onClick={() => {
+            setOpenedModal("tutorial");
+            playSound("neutral5.mp3");
+          }}
+        >
+          TUTORIEL
+        </button>
+        <div
+          className="description_text"
+          onClick={() => {
+            setOpenedModal("modify_description");
+            playSound("neutral5.mp3");
+          }}
+        >
+          <p style={{ whiteSpace: "pre-wrap" }}>
+            {character.description || "Description du personnage"}
+          </p>
+        </div>
+        <div className="traits">
+          {character.traits.map((trait, index) => (
+            <p
+              key={index}
+              className="trait"
+              onClick={() => {
+                setOpenedModal("modify_trait");
+                playSound("neutral5.mp3");
+                setModalInfos({
+                  type: "trait",
+                  name: trait.name,
+                  description: trait.description,
+                });
+              }}
+            >
+              &#9671; {trait.name} : {trait.description}
+            </p>
+          ))}
+          <button
+            onClick={() => {
+              setOpenedModal("create_trait");
+              playSound("neutral5.mp3");
+              setModalInfos({ type: "trait", name: "", description: "" });
+            }}
+          >
+            +
+          </button>
+        </div>
+      </>
+    );
+  }, [tab, character.traits, character.description]);
+
   return (
     <main className="NamePage">
       <header className="main_header">
@@ -1039,7 +1094,8 @@ export default function NamePage() {
       </header>
 
       {/* DESCRIPTION */}
-      {tab === "description" ? (
+      {descriptionTab}
+      {/* {tab === "description" ? (
         <>
           <button
             className="tutorial_button"
@@ -1092,7 +1148,7 @@ export default function NamePage() {
         </>
       ) : (
         ""
-      )}
+      )} */}
 
       {tab === "inventory" ? (
         <>
