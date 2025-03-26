@@ -1215,7 +1215,7 @@ export default function NamePage() {
               <div
                 key={index}
                 className="item"
-                onClick={() => {
+                onMouseDown={() => {
                   setOpenedModal("modify_item");
                   playSound("neutral5.mp3");
                   setModalInfos({
