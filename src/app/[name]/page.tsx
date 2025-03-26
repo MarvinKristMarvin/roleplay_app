@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useMemo } from "react";
+import React, { startTransition, useMemo } from "react";
 import { useParams } from "next/navigation";
 import Image from "next/image";
 import { useState } from "react";
@@ -1094,10 +1094,10 @@ export default function NamePage() {
           <div
             className="inventory"
             onClick={() => {
-              requestAnimationFrame(() => {
+              startTransition(() => {
                 setTab("inventory");
-                playSound("neutral7.mp3");
               });
+              playSound("neutral7.mp3");
             }}
           >
             <Image
