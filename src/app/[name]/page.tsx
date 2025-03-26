@@ -449,6 +449,7 @@ export default function NamePage() {
     };
 
     fetchOrCreateCharacter();
+    // eslint-disable-next-line
   }, [name]); // Re-fetch when name changes
 
   const [tab, setTab] = useState("description");
@@ -928,6 +929,55 @@ export default function NamePage() {
     );
   }, [tab, character.traits, character.description]);
 
+  const sortedInventory = useMemo(() => {
+    return character.items
+      .slice() // Create a shallow copy to avoid mutating state
+      .sort((a, b) => {
+        const order = [
+          "Inventaire",
+          "Mains",
+          "Main",
+          "Tête",
+          "Buste",
+          "Jambes",
+          "Pieds",
+          "Sac",
+          "Accessoire",
+        ];
+
+        // First, sort by type according to the predefined order
+        const typeOrderA = order.indexOf(a.category);
+        const typeOrderB = order.indexOf(b.category);
+
+        if (typeOrderA !== typeOrderB) {
+          return typeOrderA - typeOrderB;
+        }
+
+        // If both items are "Inventaire", sort by slots in ascending order
+        if (a.category === "Inventaire" && b.category === "Inventaire") {
+          return a.slots - b.slots;
+        }
+
+        return 0;
+      });
+  }, [character.items]);
+
+  const sortedStats = useMemo(() => {
+    return character.stats
+      .slice() // Create a shallow copy to avoid modifying state directly
+      .sort((a, b) => {
+        const aIsUpper = /^[A-Z]+$/.test(a.name) ? 1 : 0; // Convert boolean to number
+        const bIsUpper = /^[A-Z]+$/.test(b.name) ? 1 : 0; // Convert boolean to number
+        return bIsUpper - aIsUpper; // Sort uppercase first
+      });
+  }, [character.stats]);
+
+  const sortedSkills = useMemo(() => {
+    return character.skills
+      .slice() // Create a shallow copy to avoid modifying state directly
+      .sort((a, b) => b.level - a.level); // Sort in descending order (higher levels first)
+  }, [character.skills]);
+
   return (
     <main className="NamePage">
       <header className="main_header">
@@ -1161,162 +1211,127 @@ export default function NamePage() {
       {tab === "inventory" ? (
         <>
           <div className="items">
-            {character.items
-              .slice() // Create a shallow copy to avoid mutating state
-              .sort((a, b) => {
-                const order = [
-                  "Inventaire",
-                  "Mains",
-                  "Main",
-                  "Tête",
-                  "Buste",
-                  "Jambes",
-                  "Pieds",
-                  "Sac",
-                  "Accessoire",
-                ];
-
-                // First, sort by type according to the predefined order
-                const typeOrderA = order.indexOf(a.category);
-                const typeOrderB = order.indexOf(b.category);
-
-                if (typeOrderA !== typeOrderB) {
-                  return typeOrderA - typeOrderB;
-                }
-
-                // If both items are "Inventaire", sort by slots in ascending order
-                if (
-                  a.category === "Inventaire" &&
-                  b.category === "Inventaire"
-                ) {
-                  return a.slots - b.slots;
-                }
-
-                return 0;
-              })
-              .map((item, index) => (
-                <div
-                  key={index}
-                  className="item"
-                  onClick={() => {
-                    setOpenedModal("modify_item");
-                    playSound("neutral5.mp3");
-                    setModalInfos({
-                      type: "item",
-                      name: item.name,
-                      description: item.description,
-                      category: item.category,
-                      slots: item.slots,
-                    });
-                  }}
-                >
-                  <div className="name_and_slot">
-                    <p className="name">{item.name}</p>
-                    {item.category === "Inventaire" && (
-                      <span>{item.slots}</span>
-                    )}
-                    {item.category === "Main" && (
-                      <span>
-                        <Image
-                          src="/icons/palm-of-hand.png"
-                          alt=""
-                          width={20}
-                          height={20}
-                          priority={false}
-                          className="icon"
-                        />
-                      </span>
-                    )}
-                    {item.category === "Mains" && (
-                      <span>
-                        <Image
-                          src="/icons/hands.png"
-                          alt=""
-                          width={20}
-                          height={20}
-                          priority={false}
-                          className="icon"
-                        />
-                      </span>
-                    )}
-                    {item.category === "Tête" && (
-                      <span>
-                        <Image
-                          src="/icons/head.png"
-                          alt=""
-                          width={20}
-                          height={20}
-                          priority={false}
-                          className="icon"
-                        />
-                      </span>
-                    )}
-                    {item.category === "Buste" && (
-                      <span>
-                        <Image
-                          src="/icons/fashion.png"
-                          alt=""
-                          width={20}
-                          height={20}
-                          priority={false}
-                          className="icon"
-                        />
-                      </span>
-                    )}
-                    {item.category === "Jambes" && (
-                      <span>
-                        <Image
-                          src="/icons/pants.png"
-                          alt=""
-                          width={20}
-                          height={20}
-                          priority={false}
-                          className="icon"
-                        />
-                      </span>
-                    )}
-                    {item.category === "Pieds" && (
-                      <span>
-                        <Image
-                          src="/icons/boots.png"
-                          alt=""
-                          width={20}
-                          height={20}
-                          priority={false}
-                          className="icon"
-                        />
-                      </span>
-                    )}
-                    {item.category === "Sac" && (
-                      <span>
-                        <Image
-                          src="/icons/backpack.png"
-                          alt=""
-                          width={20}
-                          height={20}
-                          priority={false}
-                          className="icon"
-                        />
-                      </span>
-                    )}
-                    {item.category === "Accessoire" && (
-                      <span>
-                        <Image
-                          src="/icons/necklace.png"
-                          alt=""
-                          width={20}
-                          height={20}
-                          priority={false}
-                          className="icon"
-                        />
-                      </span>
-                    )}
-                  </div>
-                  {item.description && (
-                    <p className="infos">{item.description}</p>
+            {sortedInventory.map((item, index) => (
+              <div
+                key={index}
+                className="item"
+                onClick={() => {
+                  setOpenedModal("modify_item");
+                  playSound("neutral5.mp3");
+                  setModalInfos({
+                    type: "item",
+                    name: item.name,
+                    description: item.description,
+                    category: item.category,
+                    slots: item.slots,
+                  });
+                }}
+              >
+                <div className="name_and_slot">
+                  <p className="name">{item.name}</p>
+                  {item.category === "Inventaire" && <span>{item.slots}</span>}
+                  {item.category === "Main" && (
+                    <span>
+                      <Image
+                        src="/icons/palm-of-hand.png"
+                        alt=""
+                        width={20}
+                        height={20}
+                        priority={false}
+                        className="icon"
+                      />
+                    </span>
+                  )}
+                  {item.category === "Mains" && (
+                    <span>
+                      <Image
+                        src="/icons/hands.png"
+                        alt=""
+                        width={20}
+                        height={20}
+                        priority={false}
+                        className="icon"
+                      />
+                    </span>
+                  )}
+                  {item.category === "Tête" && (
+                    <span>
+                      <Image
+                        src="/icons/head.png"
+                        alt=""
+                        width={20}
+                        height={20}
+                        priority={false}
+                        className="icon"
+                      />
+                    </span>
+                  )}
+                  {item.category === "Buste" && (
+                    <span>
+                      <Image
+                        src="/icons/fashion.png"
+                        alt=""
+                        width={20}
+                        height={20}
+                        priority={false}
+                        className="icon"
+                      />
+                    </span>
+                  )}
+                  {item.category === "Jambes" && (
+                    <span>
+                      <Image
+                        src="/icons/pants.png"
+                        alt=""
+                        width={20}
+                        height={20}
+                        priority={false}
+                        className="icon"
+                      />
+                    </span>
+                  )}
+                  {item.category === "Pieds" && (
+                    <span>
+                      <Image
+                        src="/icons/boots.png"
+                        alt=""
+                        width={20}
+                        height={20}
+                        priority={false}
+                        className="icon"
+                      />
+                    </span>
+                  )}
+                  {item.category === "Sac" && (
+                    <span>
+                      <Image
+                        src="/icons/backpack.png"
+                        alt=""
+                        width={20}
+                        height={20}
+                        priority={false}
+                        className="icon"
+                      />
+                    </span>
+                  )}
+                  {item.category === "Accessoire" && (
+                    <span>
+                      <Image
+                        src="/icons/necklace.png"
+                        alt=""
+                        width={20}
+                        height={20}
+                        priority={false}
+                        className="icon"
+                      />
+                    </span>
                   )}
                 </div>
-              ))}
+                {item.description && (
+                  <p className="infos">{item.description}</p>
+                )}
+              </div>
+            ))}
 
             <button
               onClick={() => {
@@ -1338,39 +1353,33 @@ export default function NamePage() {
       ) : (
         ""
       )}
+
       {tab === "stats" ? (
         <>
           <div className="stats_container">
-            {character.stats
-              .slice() // Create a shallow copy to avoid modifying state directly
-              .sort((a, b) => {
-                const aIsUpper = /^[A-Z]+$/.test(a.name) ? 1 : 0; // Convert boolean to number
-                const bIsUpper = /^[A-Z]+$/.test(b.name) ? 1 : 0; // Convert boolean to number
-                return bIsUpper - aIsUpper; // Sort uppercase first
-              })
-              .map((stat, index) => (
-                <div
-                  key={index}
-                  className="stat"
-                  onClick={() => {
-                    setOpenedModal("modify_stat");
-                    playSound("neutral5.mp3");
-                    setModalInfos({
-                      type: "stat",
-                      name: stat.name,
-                      value: stat.value,
-                      traits: stat.traits,
-                      items: stat.items,
-                      base: stat.base,
-                    });
-                  }}
-                >
-                  <div className="name_and_value">
-                    <p className="stat_name">{stat.name}</p>
-                    <p className="stat_value">{stat.value}</p>
-                  </div>
+            {sortedStats.map((stat, index) => (
+              <div
+                key={index}
+                className="stat"
+                onClick={() => {
+                  setOpenedModal("modify_stat");
+                  playSound("neutral5.mp3");
+                  setModalInfos({
+                    type: "stat",
+                    name: stat.name,
+                    value: stat.value,
+                    traits: stat.traits,
+                    items: stat.items,
+                    base: stat.base,
+                  });
+                }}
+              >
+                <div className="name_and_value">
+                  <p className="stat_name">{stat.name}</p>
+                  <p className="stat_value">{stat.value}</p>
                 </div>
-              ))}
+              </div>
+            ))}
           </div>
         </>
       ) : (
@@ -1381,10 +1390,8 @@ export default function NamePage() {
           <header
             className="skills_header"
             onClick={() => {
-              {
-                setOpenedModal("modify_skillpoints");
-                playSound("neutral5.mp3");
-              }
+              setOpenedModal("modify_skillpoints");
+              playSound("neutral5.mp3");
             }}
           >
             <Image
@@ -1399,31 +1406,28 @@ export default function NamePage() {
           </header>
 
           <div className="skills_container">
-            {character.skills
-              .slice() // Create a shallow copy to avoid modifying state directly
-              .sort((a, b) => b.level - a.level) // Sort in descending order (higher levels first)
-              .map((skill, index) => (
-                <div
-                  key={index}
-                  className="skill"
-                  onClick={() => {
-                    setOpenedModal("modify_skill");
-                    playSound("neutral5.mp3");
-                    setModalInfos({
-                      type: "skill",
-                      name: skill.name,
-                      level: skill.level,
-                      description: skill.description,
-                    });
-                  }}
-                >
-                  <div className="name_and_level">
-                    <p className="skill_name">{skill.name}</p>
-                    <p className="skill_level">{skill.level}</p>
-                  </div>
-                  <p className="skill_description">{skill.description}</p>
+            {sortedSkills.map((skill, index) => (
+              <div
+                key={index}
+                className="skill"
+                onClick={() => {
+                  setOpenedModal("modify_skill");
+                  playSound("neutral5.mp3");
+                  setModalInfos({
+                    type: "skill",
+                    name: skill.name,
+                    level: skill.level,
+                    description: skill.description,
+                  });
+                }}
+              >
+                <div className="name_and_level">
+                  <p className="skill_name">{skill.name}</p>
+                  <p className="skill_level">{skill.level}</p>
                 </div>
-              ))}
+                <p className="skill_description">{skill.description}</p>
+              </div>
+            ))}
           </div>
 
           <button
@@ -1445,6 +1449,7 @@ export default function NamePage() {
       ) : (
         ""
       )}
+
       {/* MODAL MODIFY EXPERIENCE*/}
       {isClient && openedModal === "modify_experience" ? (
         <>
