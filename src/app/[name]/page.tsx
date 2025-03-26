@@ -966,6 +966,7 @@ export default function NamePage() {
               alt="heart"
               width={36}
               height={36}
+              priority={false}
             />
             <span className="hp">
               {character.actuallife} /{" "}
@@ -979,6 +980,7 @@ export default function NamePage() {
               alt="star"
               width={36}
               height={36}
+              priority={false}
             />
             <span className="current_resurrection">
               {character.resurrections}
@@ -998,6 +1000,7 @@ export default function NamePage() {
               alt="gold"
               width={36}
               height={36}
+              priority={false}
             />
             <span>{character.riels}</span>
           </div>
@@ -1007,6 +1010,7 @@ export default function NamePage() {
               alt="gold"
               width={36}
               height={36}
+              priority={false}
             />
             <span>
               {character.items
@@ -1032,6 +1036,7 @@ export default function NamePage() {
               alt="description"
               width={60}
               height={60}
+              priority={false}
               className={tab === "description" ? "selected" : ""}
             />
             <span>description</span>
@@ -1050,6 +1055,7 @@ export default function NamePage() {
               alt="inventory"
               width={60}
               height={60}
+              priority={false}
               className={tab === "inventory" ? "selected" : ""}
             />
             <span>inventory</span>
@@ -1068,6 +1074,7 @@ export default function NamePage() {
               alt="stats"
               width={60}
               height={60}
+              priority={false}
               className={tab === "stats" ? "selected" : ""}
             />
             <span>stats</span>
@@ -1086,6 +1093,7 @@ export default function NamePage() {
               alt="skills"
               width={60}
               height={60}
+              priority={false}
               className={tab === "skills" ? "selected" : ""}
             />
             <span>skills</span>
@@ -1214,6 +1222,7 @@ export default function NamePage() {
                           alt=""
                           width={20}
                           height={20}
+                          priority={false}
                           className="icon"
                         />
                       </span>
@@ -1225,6 +1234,7 @@ export default function NamePage() {
                           alt=""
                           width={20}
                           height={20}
+                          priority={false}
                           className="icon"
                         />
                       </span>
@@ -1236,6 +1246,7 @@ export default function NamePage() {
                           alt=""
                           width={20}
                           height={20}
+                          priority={false}
                           className="icon"
                         />
                       </span>
@@ -1247,6 +1258,7 @@ export default function NamePage() {
                           alt=""
                           width={20}
                           height={20}
+                          priority={false}
                           className="icon"
                         />
                       </span>
@@ -1258,6 +1270,7 @@ export default function NamePage() {
                           alt=""
                           width={20}
                           height={20}
+                          priority={false}
                           className="icon"
                         />
                       </span>
@@ -1269,6 +1282,7 @@ export default function NamePage() {
                           alt=""
                           width={20}
                           height={20}
+                          priority={false}
                           className="icon"
                         />
                       </span>
@@ -1280,6 +1294,7 @@ export default function NamePage() {
                           alt=""
                           width={20}
                           height={20}
+                          priority={false}
                           className="icon"
                         />
                       </span>
@@ -1291,6 +1306,7 @@ export default function NamePage() {
                           alt=""
                           width={20}
                           height={20}
+                          priority={false}
                           className="icon"
                         />
                       </span>
@@ -1376,6 +1392,7 @@ export default function NamePage() {
               alt="dice"
               width={22}
               height={22}
+              priority={false}
               className="icon"
             />
             <p className="skills_points">{character.skillpoints}</p>
@@ -1586,6 +1603,7 @@ export default function NamePage() {
                       alt="heart"
                       width={22}
                       height={22}
+                      priority={false}
                     ></Image>
                   </span>
                 </div>
@@ -1608,6 +1626,7 @@ export default function NamePage() {
                       alt="star"
                       width={22}
                       height={22}
+                      priority={false}
                     ></Image>
                   </span>
                 </div>
@@ -1630,6 +1649,7 @@ export default function NamePage() {
                       alt="coin"
                       width={22}
                       height={22}
+                      priority={false}
                     ></Image>
                   </span>
                 </div>
