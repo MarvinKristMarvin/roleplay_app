@@ -514,7 +514,7 @@ export default function NamePage() {
   const [tempLife, setTempLife] = useState("");
   const [tempResurrections, setTempResurrections] = useState("");
   const [tempRiels, setTempRiels] = useState("");
-  const [tempLevel, setTempLevel] = useState("");
+  //const [tempLevel, setTempLevel] = useState("");
   const [tempExperience, setTempExperience] = useState("");
 
   // Handles input focus, cursor at the end
@@ -1216,8 +1216,6 @@ export default function NamePage() {
                 key={index}
                 className="item"
                 onMouseDown={() => {
-                  setOpenedModal("modify_item");
-                  playSound("neutral5.mp3");
                   setModalInfos({
                     type: "item",
                     name: item.name,
@@ -1225,6 +1223,8 @@ export default function NamePage() {
                     category: item.category,
                     slots: item.slots,
                   });
+                  setOpenedModal("modify_item");
+                  playSound("neutral5.mp3");
                 }}
               >
                 <div className="name_and_slot">
@@ -1471,21 +1471,17 @@ export default function NamePage() {
                 <div className="input_container">
                   <input
                     type="text"
-                    inputMode="numeric"
                     defaultValue={String(character.level)}
                     ref={refs.level}
                     onFocus={() => {
                       handleFocus(refs.level);
-                      setTempLevel("");
                     }}
-                    onChange={(e) => setTempLevel(e.target.value)}
                   />
                   <span>Niveau</span>
                 </div>
                 <div className="input_container">
                   <input
                     type="text"
-                    inputMode="numeric"
                     defaultValue={String(character.experience)}
                     ref={refs.XP}
                     onFocus={() => {
@@ -1499,56 +1495,65 @@ export default function NamePage() {
                 <button
                   className="modal_button confirm"
                   onClick={() => {
-                    // Process temporary values and update character
                     setCharacter((prevCharacter) => {
                       const newCharacter = { ...prevCharacter };
+                      const currentLevel = prevCharacter.level || 0;
+                      const currentXP = prevCharacter.experience || 0;
 
-                      // Process level
-                      if (tempLevel) {
-                        const currentLevel = prevCharacter.level || 0;
-                        const input = String(tempLevel).trim();
+                      // Process level input
+                      if (refs.level.current?.value) {
+                        const input = refs.level.current.value.trim();
 
-                        if (/^[+\-]\d+$/.test(input)) {
-                          // If input is "+X" or "-X", add/subtract from current value
-                          newCharacter.level = currentLevel + Number(input);
-                        } else if (/^[\d+\-*/\s]+$/.test(input)) {
-                          // If it's a mathematical expression, evaluate it
-                          try {
-                            const evaluated = safeEval(input);
-                            newCharacter.level = !isNaN(evaluated)
-                              ? evaluated
-                              : character.level;
-                          } catch {
-                            newCharacter.level = character.level;
+                        try {
+                          let newLevel;
+
+                          if (/^[+\-]\d+$/.test(input)) {
+                            // If input is "+X" or "-X", add/subtract from current level
+                            newLevel = currentLevel + Number(input);
+                          } else if (/^[\d+\-*/\s]+$/.test(input)) {
+                            // If it's a mathematical expression, evaluate it
+                            newLevel = safeEval(input);
+                          } else {
+                            // Invalid input, keep the original level
+                            newLevel = currentLevel;
                           }
-                        } else {
-                          // Invalid input sets value to 0
-                          newCharacter.level = character.level;
+
+                          if (!isNaN(newLevel) && newLevel >= 0) {
+                            newCharacter.level = newLevel;
+                          }
+                        } catch {
+                          newCharacter.level = currentLevel; // Keep previous level on error
                         }
                       }
 
-                      // Process experience
+                      // Process experience input
                       if (tempExperience) {
-                        const currentExperience = prevCharacter.experience || 0;
-                        const input = String(tempExperience).trim();
+                        const input = tempExperience.trim();
 
-                        if (/^[+\-]\d+$/.test(input)) {
-                          // If input is "+X" or "-X", add/subtract from current value
-                          newCharacter.experience =
-                            currentExperience + Number(input);
-                        } else if (/^[\d+\-*/\s]+$/.test(input)) {
-                          // If it's a mathematical expression, evaluate it
-                          try {
-                            const evaluated = safeEval(input);
-                            newCharacter.experience = !isNaN(evaluated)
-                              ? evaluated
-                              : character.experience;
-                          } catch {
-                            newCharacter.experience = character.experience;
+                        try {
+                          let newXP;
+
+                          if (/^[+\-]\d+$/.test(input)) {
+                            // If input is "+X" or "-X", add/subtract from current XP
+                            newXP = currentXP + Number(input);
+                          } else if (/^[\d+\-*/\s]+$/.test(input)) {
+                            // If it's a mathematical expression, evaluate it
+                            newXP = safeEval(input);
+                          } else {
+                            // Invalid input, keep the original XP
+                            newXP = currentXP;
                           }
-                        } else {
-                          // Invalid input sets value to 0
-                          newCharacter.experience = character.experience;
+
+                          if (!isNaN(newXP)) {
+                            // Convert XP to levels if >= 100
+                            const gainedLevels = Math.floor(newXP / 100);
+                            const remainingXP = newXP % 100;
+
+                            newCharacter.level += gainedLevels;
+                            newCharacter.experience = remainingXP;
+                          }
+                        } catch {
+                          newCharacter.experience = currentXP; // Keep previous XP on error
                         }
                       }
 
@@ -1556,7 +1561,6 @@ export default function NamePage() {
                     });
 
                     // Reset temporary values
-                    setTempLevel("");
                     setTempExperience("");
                     playSound("neutral1.mp3");
                     setOpenedModal("");
@@ -1593,7 +1597,6 @@ export default function NamePage() {
                 <div className="input_container">
                   <input
                     type="text"
-                    inputMode="numeric"
                     defaultValue={String(character.actuallife)}
                     ref={refs.life}
                     onFocus={() => {
@@ -1615,7 +1618,6 @@ export default function NamePage() {
                 <div className="input_container">
                   <input
                     type="text"
-                    inputMode="numeric"
                     defaultValue={String(character.resurrections)}
                     ref={refs.resurrections}
                     onFocus={() => {
@@ -1638,7 +1640,6 @@ export default function NamePage() {
                 <div className="input_container">
                   <input
                     type="text"
-                    inputMode="numeric"
                     defaultValue={String(character.riels)}
                     ref={refs.riels}
                     onFocus={() => {
@@ -2126,7 +2127,7 @@ export default function NamePage() {
 
                   <Select
                     options={optionsType}
-                    defaultValue={selectedType}
+                    defaultValue={optionsType[0]}
                     onChange={(selectedOption) =>
                       setSelectedType(selectedOption)
                     }
@@ -2188,7 +2189,6 @@ export default function NamePage() {
               <div className="modal_content">
                 <input
                   type="text"
-                  inputMode="numeric"
                   defaultValue={modalInfos.base}
                   id="stat_base"
                 />
@@ -2231,7 +2231,6 @@ export default function NamePage() {
               <div className="modal_content">
                 <input
                   type="text"
-                  inputMode="numeric"
                   value={tempSkillpoints}
                   onChange={(e) => {
                     setTempSkillpoints(e.target.value);
